@@ -1,10 +1,11 @@
 from flask import Flask
+from flask_cors import CORS
 from config.config import Config
 from models.task import db
 from routes.tasks import tasks_bp
 
 app = Flask(__name__)
-
+CORS(app) 
 
 app.config.from_object(Config)
 
