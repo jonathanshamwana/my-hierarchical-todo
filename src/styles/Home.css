@@ -1,0 +1,44 @@
+.home-container {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .demo-image {
+    width: 100%; /* Make it responsive */
+    max-width: 700px; /* Ensure it doesn’t exceed a reasonable width */
+    height: auto; /* Maintain aspect ratio */
+    margin: 20px auto;
+    margin-bottom: 50px;
+    margin-top: 35px;
+    display: block;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    filter: brightness(0.9) contrast(0.85) sepia(0.2); /* Faded/film effect */
+  }
+  
+  .cta-container {
+    max-width: 900px; /* Matches the image max-width */
+    margin: 20px auto;
+  }
+  
+  .cta-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    width: 100%; /* Ensures it spans the full container */
+    max-width: 800px; /* Restricts button width for a bit of margin around it */
+    margin: 0 auto; /* Center the button horizontally */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cta-button:hover {
+    background-color: var(--accent-color);
+  }
+  

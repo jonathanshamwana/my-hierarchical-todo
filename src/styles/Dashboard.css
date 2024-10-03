@@ -1,0 +1,59 @@
+/* Root color variables */
+:root {
+  --primary-color: #1E3E62; /* Dark blue */
+  --accent-color: #FF6500;  /* Orange */
+  --secondary-color: #f7f7f7; /* Light background */
+  --subtask-bg-color: #e0e0e0d2; /* Light gray for subtasks */
+  --text-color: #333333; /* Default text color */
+  --border-radius: 12px;
+}
+
+.dashboard-title {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: var(--primary-color);
+}
+
+.dashboard {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.lists-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Four equal-width columns */
+  gap: 20px;
+  margin-bottom: 20px; /* Ensure space between columns and the button */
+}
+
+.add-task-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.add-task-button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  width: 200px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.add-task-button:hover {
+  background-color: var(--accent-color);
+}
+
+  
+  
