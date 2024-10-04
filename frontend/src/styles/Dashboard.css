@@ -55,5 +55,18 @@
   background-color: var(--accent-color);
 }
 
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.lists-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
   
   

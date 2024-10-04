@@ -19,7 +19,7 @@ const TaskItem = ({ task }) => {
   return (
     <div>
       <div className="task-item" onClick={handleToggleSubtasks}>
-        <p>{task.name}</p>
+        <p>{task.description}</p>
       </div>
       {showSubtasks && task.subtasks && (
         <div className="subtasks-container">
@@ -29,14 +29,14 @@ const TaskItem = ({ task }) => {
                 className="subtask-item"
                 onClick={() => handleToggleSubSubtasks(subtask.id)}
               >
-                <p>{subtask.name}</p>
+                <p>{subtask.description}</p>
               </div>
               {/* Show sub-subtasks when their parent subtask is clicked */}
               {showSubSubtasks[subtask.id] && subtask.subtasks && (
                 <div className="subtasks-container">
                   {subtask.subtasks.map((subsubtask, subIndex) => (
                     <div key={subIndex} className="subtask-item sub-subtask">
-                      <p>{subsubtask.name}</p>
+                      <p>{subsubtask.description}</p>
                     </div>
                   ))}
                 </div>

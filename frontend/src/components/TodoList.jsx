@@ -6,6 +6,7 @@ const TodoList = ({ title, tasks }) => {
   return (
     <div className="todo-list">
       <h2 className="todo-list-title">{title}</h2>
+      <div className="title-divider"></div>
       <div className="todo-list-items">
         {tasks.map((task, index) => (
           <TaskItem key={index} task={task} />

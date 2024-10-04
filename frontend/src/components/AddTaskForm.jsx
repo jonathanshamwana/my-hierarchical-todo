@@ -24,7 +24,7 @@ const AddTaskForm = ({ categories, onAddTask }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (taskName.trim() !== '' && selectedCategory !== '') {
-      onAddTask({ taskName, subtasks, category: selectedCategory });
+      onAddTask({ description: taskName, subtasks, category: selectedCategory });
       setTaskName('');
       setSubtasks([{ id: 1, name: '' }]);
       setSelectedCategory('');
