@@ -1,34 +1,47 @@
-.task-item {
+.task-item-container {
+  margin-bottom: 10px;
+}
+
+.task-item, .subtask-item {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 14px;
   background-color: var(--primary-color);
-  padding: 10px;
   border-radius: var(--border-radius);
+  margin-bottom: 5px;
+  width: 100%; 
   color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
 }
 
-.task-item:hover {
-  background-color: var(--accent-color);
+.task-description {
+  flex-grow: 1; 
+  margin-right: 20px;
 }
 
-/* Subtasks styling */
 .subtasks-container {
-  margin-left: 20px; /* Indent subtasks */
+  margin-left: 20px;
   margin-top: 10px;
 }
 
 .subtask-item {
-  background-color: var(--subtask-bg-color); /* Light gray background */
+  background-color: var(--subtask-bg-color);
   padding: 8px;
   border-radius: var(--border-radius);
-  color: var(--text-color); /* Dark text */
+  color: var(--text-color); 
   margin-top: 5px;
   transition: background-color 0.2s ease-in-out;
 }
 
-/* Sub-sub tasks slightly darker */
+.delete-icon {
+  color: rgba(255, 0, 0, 0.535);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: 10px; 
+}
+
 .sub-subtask {
-  margin-left: 20px; /* Further indent for sub-sub tasks */
-  background-color: #d6d6d6; /* Slightly darker than the subtasks */
+  margin-left: 20px; 
+  background-color: #d6d6d6; 
 }

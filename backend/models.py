@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -24,3 +25,9 @@ class SubSubtask(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
     subtask_id = db.Column(db.Integer, db.ForeignKey('subtask.id'), nullable=False)
+
+class CompletedTask(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(255), nullable=False)
+    subtasks = db.Column(db.Text) 
+    completion_date = db.Column(db.DateTime, default=datetime.utcnow)

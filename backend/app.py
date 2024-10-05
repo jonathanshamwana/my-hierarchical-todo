@@ -3,16 +3,13 @@ from flask_cors import CORS
 from config import Config
 from models import db
 from tasks import tasks_bp
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 CORS(app)
-
 app.config.from_object(Config)
-
 db.init_app(app)
-
-# with app.app_context():
-#     db.create_all()
+migrate = Migrate(app, db)
 
 app.register_blueprint(tasks_bp, url_prefix='/api/tasks')
 
