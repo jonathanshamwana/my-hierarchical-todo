@@ -67,3 +67,7 @@ h1 {
     color: #888;
     margin-top: 10px;
 }
+
+.completed-tasks-heading {
+    margin-bottom: 20px;
+}

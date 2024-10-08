@@ -7,6 +7,24 @@
   --border-radius: 12px;
 }
 
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(270deg, #cfd9df, #e2ebf0, #e1d8f1, #cfd9df);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
 .dashboard-title {
   text-align: center;
   font-size: 36px;
@@ -15,8 +33,11 @@
 }
 
 .dashboard {
-  padding: 50px 100px;
   margin: 0 auto;
+  position: relative;
+  padding: 80px 100px;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
 .lists-container {
@@ -27,8 +48,8 @@
 }
 
 .completed-dropzone {
-  background-color: white;
   border-radius: 12px;
+  border: 3px solid rgb(62, 123, 62);
   padding: 20px;
   text-align: center;
   height: 100%;
