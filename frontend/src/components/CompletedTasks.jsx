@@ -13,15 +13,13 @@ const CompletedTasks = () => {
   
     return (
       <div className="completed-tasks-container">
-        <h2>Completed Tasks</h2>
+        <h2 className="completed-tasks-heading ">Completed Tasks</h2>
         <div>
           {completedTasks.map((task) => (
             <div key={task.id} className="completed-task-item">
               <h3 className="task-title">{task.description}</h3>
               <p className="completion-date">Completed on: {new Date(task.completion_date).toLocaleString()}</p>
-              <h4 className="subtasks-title">Subtasks:</h4>
               <ul className="subtask-list">
-                {/* Check if task.subtasks exists and is an array before mapping */}
                 {Array.isArray(task.subtasks) && task.subtasks.length > 0 ? (
                   task.subtasks.map((subtask, index) => (
                     <li key={index} className="subtask-item">{subtask}</li>
