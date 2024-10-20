@@ -10,6 +10,8 @@ function Header() {
           <li><a href="/dashboard">Dashboard</a></li>
           <li><a href="/completed">Completed</a></li>
           <li><a href="/integrations">Integrations</a></li>
+          <li><a href="/signup">Signup</a></li>
+          <li><a href="/login">Login</a></li>
         </ul>
       </nav>
     </header>
