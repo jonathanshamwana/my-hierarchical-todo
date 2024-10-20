@@ -1,18 +1,39 @@
 import React, { useState } from 'react';
+import ParticlesBackground from './Home/ParticlesBackground';
+import { loginUser } from '../api/authApi';
 import '../styles/Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
+
+    const userData = {
+      email: email,
+      password: password,
+    };
+    
+    try {
+      const response = await loginUser(userData);
+      setSuccess(response.message);
+      setError('');
+    } catch (err) {
+      setError(err.message);
+      setSuccess(''); 
+    }
   };
 
   return (
     <div className="login-container">
+      <div className="animated-background"></div>
+      <ParticlesBackground />
       <h2>Login</h2>
+      {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input

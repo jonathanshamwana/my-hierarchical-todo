@@ -23,7 +23,6 @@
   width: 100%;
   height: 100%;
   z-index: -1;
-  /* background: linear-gradient(270deg, #cfd9df, #e2ebf0, #cfd9df, #e2ebf0); */
   background: linear-gradient(270deg, #cfd9df, #e2ebf0, #e1d8f1, #cfd9df);
   background-size: 400% 400%;
   animation: gradientAnimation 10s ease infinite;

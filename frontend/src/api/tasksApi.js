@@ -1,5 +1,7 @@
+const API_BASE_URL = 'http://127.0.0.1:5000';
+
 const fetchTasks = () => {
-    return fetch('http://127.0.0.1:5000/api/tasks/')
+    return fetch(`${API_BASE_URL}/api/tasks/`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -9,7 +11,7 @@ const fetchTasks = () => {
   };
   
 const AddTask = (newTask) => {
-    return fetch('http://127.0.0.1:5000/api/tasks/', {
+    return fetch(`${API_BASE_URL}/api/tasks/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -24,7 +26,7 @@ const AddTask = (newTask) => {
   };
 
 const DeleteTask = (taskId) => {
-    return fetch(`http://127.0.0.1:5000/api/tasks/${taskId}`, {
+    return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
       method: 'DELETE',
     }).then((response) => {
       if (!response.ok) {
@@ -35,7 +37,7 @@ const DeleteTask = (taskId) => {
   };
 
 const CompleteTask = (taskId) => {
-    return fetch(`http://127.0.0.1:5000/api/tasks/complete/${taskId}`, {
+    return fetch(`${API_BASE_URL}/api/tasks/complete/${taskId}`, {
       method: 'POST',
     }).then((response) => {
       if (!response.ok) {
