@@ -2,9 +2,15 @@ from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User
 import jwt
-import datetime
+from datetime import datetime, timezone, timedelta
+from dotenv import load_dotenv
+import os
 
 auth_bp = Blueprint('auth', __name__)
+
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -15,7 +21,7 @@ def register():
     new_user = User(
         username=data['username'],
         email=data['email'],
-        password=hashed_password
+        password_hash=hashed_password
     )
     db.session.add(new_user)
     db.session.commit()
@@ -27,12 +33,13 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
 
-    if not user or not check_password_hash(user.password, data['password']):
+    if not user or not check_password_hash(user.password_hash, data['password']): 
         return jsonify({'message': 'Invalid email or password'}), 401
 
     token = jwt.encode(
-        {'user_id': user.id, 'exp': datetime.datetime() + datetime.timedelta(hours=24)},
-        'your_secret_key'
+        {'user_id': user.id, 'exp': datetime.now(timezone.utc) + timedelta(hours=24)}, 
+        SECRET_KEY,
+        algorithm='HS256'
     )
 
     return jsonify({'token': token}), 200

@@ -24,24 +24,21 @@ export const signupUser = async (userData) => {
 };
 
 export const loginUser = async (credentials) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    });
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(credentials),
+  });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || 'Invalid email or password');
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error during login:', error);
-    throw error;
+  const data = await response.json();
+  if (response.ok) {
+    sessionStorage.setItem('token', data.token); 
+    window.location.href = '/dashboard';
+  } else {
+    console.error('Login failed:', data.message);
   }
+
+  return data;
 };
