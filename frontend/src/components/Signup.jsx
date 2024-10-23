@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { message } from 'antd';
 import ParticlesBackground from './Home/ParticlesBackground';
 import { signupUser } from '../api/authApi';
+import { useNavigate } from 'react-router-dom'
 import '../styles/Signup.css';
 
 function Signup() {
@@ -8,7 +10,7 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +23,12 @@ function Signup() {
 
     try {
       const response = await signupUser(userData);
-      setSuccess(response.message);
-      setError('');
+      sessionStorage.setItem('token', response.token);
+
+      message.success("Account created")
+      navigate('/dashboard')
     } catch (err) {
-      setError(err.message);
-      setSuccess(''); 
+      message.error("Failed to create account")
     }
   };
 
@@ -34,8 +37,6 @@ function Signup() {
       <div className="animated-background"></div>
       <ParticlesBackground />
       <h2>Sign Up</h2>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit}>
         <label>First name:</label>
         <input

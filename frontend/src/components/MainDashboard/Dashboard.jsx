@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 import TodoList from './TodoList';
 import AddTaskForm from './AddTaskForm';
 import tasksApi from '../../api/tasksApi';
