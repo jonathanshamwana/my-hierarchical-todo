@@ -34,6 +34,7 @@ def token_required(f):
 @tasks_bp.route('/', methods=['GET'])
 @token_required
 def get_tasks(current_user_id):
+    print("STARTING GET_TASKS FUNCTION...")
     tasks = Task.query.filter_by(user_id=current_user_id).all()
     task_list = [{
         'id': task.id,

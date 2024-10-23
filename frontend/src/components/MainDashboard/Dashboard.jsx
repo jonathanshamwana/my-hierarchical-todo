@@ -20,6 +20,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       const data = await tasksApi.fetchTasks();
+
       const categorizedTasks = {
         running: data.filter(task => task.category === 'Running'),
         gym: data.filter(task => task.category === 'Gym'),
@@ -29,6 +30,7 @@ const Dashboard = () => {
       setTasks(categorizedTasks);
     } catch (error) {
       setError('Error fetching tasks');
+      console.error(error);
     } finally {
       setLoading(false);
     }

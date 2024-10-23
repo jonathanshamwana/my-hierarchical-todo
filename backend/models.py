@@ -27,7 +27,7 @@ class Task(db.Model):
     description = db.Column(db.String(200), nullable=False)
     status = db.Column(db.String(50), default='ToDo')
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Link to User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False) 
     subtasks = db.relationship('Subtask', backref='task', lazy=True, cascade='all, delete-orphan')
 
 class Subtask(db.Model):
