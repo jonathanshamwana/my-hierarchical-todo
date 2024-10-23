@@ -1,11 +1,53 @@
 from flask import Blueprint, request, jsonify
-from datetime import datetime
+from datetime import datetime, timezone
 from models import db, Task, Subtask, Category, CompletedTask
+from dotenv import load_dotenv
+import os
+from functools import wraps
+import jwt
 
 tasks_bp = Blueprint('tasks', __name__)
 
+load_dotenv()
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split(" ")[1]
+
+        if not token:
+            return jsonify({'message': 'Token is missing!'}), 401
+
+        try:
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+            current_user_id = data['user_id']
+        except:
+            return jsonify({'message': 'Token is invalid!'}), 401
+
+        return f(current_user_id, *args, **kwargs)
+    return decorated
+
+@tasks_bp.route('/', methods=['GET'])
+@token_required
+def get_tasks(current_user_id):
+    tasks = Task.query.filter_by(user_id=current_user_id).all()
+    task_list = [{
+        'id': task.id,
+        'description': task.description,
+        'status': task.status,
+        'category': task.category.name,
+        'subtasks': [{'id': subtask.id, 'description': subtask.description} for subtask in task.subtasks]
+    } for task in tasks]
+
+    return jsonify(task_list), 200
+
 @tasks_bp.route('/', methods=['POST'])
-def create_task():
+@token_required
+def create_task(current_user_id):
     data = request.get_json()
     category = Category.query.filter_by(name=data['category']).first()
     
@@ -32,23 +74,14 @@ def create_task():
 
     return jsonify({'message': 'Task and subtasks created', 'task_id': new_task.id}), 201
 
-
-@tasks_bp.route('/', methods=['GET'])
-def get_tasks():
-    tasks = Task.query.all()
-    task_list = [{
-        'id': task.id,
-        'description': task.description,
-        'status': task.status,
-        'category': task.category.name,
-        'subtasks': [{'id': subtask.id, 'description': subtask.description} for subtask in task.subtasks]
-    } for task in tasks]
-
-    return jsonify(task_list), 200
-
 @tasks_bp.route('/<int:task_id>', methods=['PUT'])
-def update_task(task_id):
+@token_required
+def update_task(current_user_id, task_id):
     task = Task.query.get_or_404(task_id)
+
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
+    
     data = request.get_json()
     
     task.status = data.get('status', task.status)
@@ -60,8 +93,12 @@ def update_task(task_id):
     return jsonify({'message': 'Task updated', 'task_id': task.id}), 200
 
 @tasks_bp.route('/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
+@token_required
+def delete_task(current_user_id, task_id):
     task = Task.query.get_or_404(task_id)
+
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
 
     for subtask in task.subtasks:
         db.session.delete(subtask)
@@ -72,7 +109,8 @@ def delete_task(task_id):
     return jsonify({'message': 'Task and subtasks deleted'}), 200
 
 @tasks_bp.route('/subtasks/<int:subtask_id>', methods=['DELETE'])
-def delete_subtask(subtask_id):
+@token_required
+def delete_subtask(current_user_id, subtask_id):
     subtask = Subtask.query.get_or_404(subtask_id)
 
     for sub_subtask in subtask.sub_subtasks:
@@ -84,15 +122,20 @@ def delete_subtask(subtask_id):
     return jsonify({'message': 'Subtask and sub-subtasks deleted'}), 200
 
 @tasks_bp.route('/complete/<int:task_id>', methods=['POST'])
-def complete_task(task_id):
+@token_required
+def complete_task(current_user_id, task_id):
     task = Task.query.get_or_404(task_id)
+
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
 
     subtasks_data = [{'id': subtask.id, 'description': subtask.description} for subtask in task.subtasks]
 
     completed_task = CompletedTask(
         description=task.description,
         subtasks=str(subtasks_data),
-        completion_date=datetime.utcnow()
+        completion_date=timezone('utc'),
+        user_id=current_user_id
     )
 
     db.session.add(completed_task)
@@ -102,8 +145,9 @@ def complete_task(task_id):
     return jsonify({'message': 'Task completed successfully'}), 201
 
 @tasks_bp.route('/completed', methods=['GET'])
-def get_completed_tasks():
-    completed_tasks = CompletedTask.query.all()
+@token_required
+def get_completed_tasks(current_user_id):
+    completed_tasks = CompletedTask.query.filter_by(user_id=current_user_id).all()
     task_list = [{
         'id': task.id,
         'description': task.description,
