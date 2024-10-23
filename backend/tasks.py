@@ -34,7 +34,6 @@ def token_required(f):
 @tasks_bp.route('/', methods=['GET'])
 @token_required
 def get_tasks(current_user_id):
-    print("STARTING GET_TASKS FUNCTION...")
     tasks = Task.query.filter_by(user_id=current_user_id).all()
     task_list = [{
         'id': task.id,
@@ -49,6 +48,7 @@ def get_tasks(current_user_id):
 @tasks_bp.route('/', methods=['POST'])
 @token_required
 def create_task(current_user_id):
+    print(f"Creating task for user: {current_user_id}")
     data = request.get_json()
     category = Category.query.filter_by(name=data['category']).first()
     
@@ -57,7 +57,8 @@ def create_task(current_user_id):
 
     new_task = Task(
         description=data['description'],
-        category_id=category.id
+        category_id=category.id,
+        user_id=current_user_id
     )
     db.session.add(new_task)
     db.session.commit() 

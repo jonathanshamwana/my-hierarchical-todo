@@ -1,9 +1,5 @@
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-const getToken = () => {
-  return sessionStorage.getItem('token');  
-};
-
 const fetchTasks = async () => {
   const token = sessionStorage.getItem('token'); 
   console.log('Token:', token);
@@ -24,7 +20,10 @@ const fetchTasks = async () => {
 };
 
 const AddTask = (newTask) => {
-  const token = getToken();
+  const token = sessionStorage.getItem('token'); 
+  console.log('Token:', token);
+  console.log('New Task Data:', newTask);
+  console.log(`${API_BASE_URL}/api/tasks/`)
 
   return fetch(`${API_BASE_URL}/api/tasks/`, {
     method: 'POST',
@@ -42,7 +41,7 @@ const AddTask = (newTask) => {
 };
 
 const DeleteTask = (taskId) => {
-  const token = getToken();
+  const token = sessionStorage.getItem('token'); 
 
   return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
     method: 'DELETE',
@@ -58,7 +57,7 @@ const DeleteTask = (taskId) => {
 };
 
 const CompleteTask = (taskId) => {
-  const token = getToken();
+  const token = sessionStorage.getItem('token'); 
 
   return fetch(`${API_BASE_URL}/api/tasks/complete/${taskId}`, {
     method: 'POST',
