@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { message } from 'antd';
-import ParticlesBackground from './Home/ParticlesBackground';
+import ParticlesBackground from '../components/General/ParticlesBackground';
 import { signupUser } from '../api/authApi';
 import { useNavigate } from 'react-router-dom'
 import '../styles/Signup.css';

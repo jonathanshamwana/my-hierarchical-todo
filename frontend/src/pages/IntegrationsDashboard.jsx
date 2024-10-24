@@ -1,9 +1,9 @@
 import React from 'react';
-import GoogleCalendarPanel from './GoogleCalendarPanel';
-import StravaPanel from './StravaPanel';
-import MyFitnessPalPanel from './MyFitnessPalPanel';
-import CorosPanel from './CorosPanel';
-import '../../styles/IntegrationsDashboard.css';
+import GoogleCalendarPanel from '../components/IntegrationsDashboard/GoogleCalendarPanel';
+import StravaPanel from '../components/IntegrationsDashboard/StravaPanel';
+import MyFitnessPalPanel from '../components/IntegrationsDashboard/MyFitnessPalPanel';
+import CorosPanel from '../components/IntegrationsDashboard/CorosPanel';
+import '../styles/IntegrationsDashboard.css';
 
 const IntegrationsDashboard = () => {
   return (

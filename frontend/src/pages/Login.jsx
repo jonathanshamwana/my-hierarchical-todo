@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ParticlesBackground from './Home/ParticlesBackground';
+import ParticlesBackground from '../components/General/ParticlesBackground';
 import { loginUser } from '../api/authApi';
 import '../styles/Login.css';
 

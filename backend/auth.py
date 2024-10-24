@@ -36,6 +36,7 @@ def register():
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
+
     data = request.get_json()
     user = User.query.filter_by(email=data['email']).first()
 
@@ -48,5 +49,5 @@ def login():
         algorithm='HS256'
     )
     print("Generated Token:", token)
-    
+
     return jsonify({'token': token}), 200

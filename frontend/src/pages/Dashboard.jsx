@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import TodoList from './TodoList';
-import AddTaskForm from './AddTaskForm';
-import tasksApi from '../../api/tasksApi';
+import TodoList from '../components/MainDashboard/TodoList';
+import AddTaskForm from '../components/MainDashboard/AddTaskForm';
+import tasksApi from '../api/tasksApi';
 import { Modal, message } from 'antd';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd'; 
 import Confetti from 'react-confetti';
-import '../../styles/Dashboard.css';
+import '../styles/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Dashboard = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [formType, setFormType] = useState('task');
   const [completedTasks, setCompletedTasks] = useState([]);
+  const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false)
-  const [tasks, setTasks] = useState({ running: [], gym: [], nutrition: [], recovery: [] });
+  const [tasks, setTasks] = useState({
+    running: [],
+    gym: [],
+    nutrition: [],
+    recovery: []
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -64,19 +71,114 @@ const Dashboard = () => {
     }
   };
   
-  const handleDeleteTask = async (taskId, category) => {
+  const handleDeleteTask = async (taskId, category, taskType = 'task') => {
     try {
-      await tasksApi.DeleteTask(taskId);
-      setTasks((prevTasks) => ({
-        ...prevTasks,
-        [category]: prevTasks[category].filter((task) => task.id !== taskId),
-      }));
+      if (taskType == 'task') {
+        await tasksApi.DeleteTask(taskId);
+      } else if (taskType == 'subtask') {
+        await tasksApi.DeleteSubtask(taskId);
+      } else if (taskType == 'subsubtask') {
+        await tasksApi.DeleteSubSubtask(taskId);
+      }
+  
+      setTasks((prevTasks) => {
+        if (taskType == 'subtask') {
+          const updatedTasks = prevTasks[category]?.map((task) =>
+            task.subtasks ? {
+              ...task,
+              subtasks: task.subtasks.filter((subtask) => subtask.id !== taskId)
+            } : task
+          );
+          return {
+            ...prevTasks,
+            [category]: updatedTasks,
+          };
+        } else {
+          return {
+            ...prevTasks,
+            [category]: prevTasks[category]
+              ? prevTasks[category].filter((task) => task.id !== taskId)
+              : [],
+          };
+        }
+      });
+      
       await fetchTasks();
-      message.success('Task deleted successfully');
+      message.success(taskType == 'subtask' ? 'Subtask deleted' : 'Task deleted');
     } catch (error) {
-      message.error(`Error deleting task: ${error.message}`);
+      message.error(`Error deleting ${taskType == 'subtask' ? 'subtask' : 'task'}: ${error.message}`);
     }
   };
+
+  const handleAddSubSubtask = async (subtaskId, newSubSubtask) => {
+    try {
+      const data = await tasksApi.AddSubSubtask(subtaskId, newSubSubtask);
+      
+      setTasks((prevTasks) => {
+        const updatedTasks = { ...prevTasks };
+  
+        Object.keys(updatedTasks).forEach((category) => {
+          updatedTasks[category] = updatedTasks[category].map((task) => {
+            return {
+              ...task,
+              subtasks: task.subtasks.map((subtask) => {
+                if (subtask.id === subtaskId) {
+                  return {
+                    ...subtask,
+                    subsubtasks: [...subtask.subsubtasks, data]
+                  };
+                }
+                return subtask;
+              })
+            };
+          });
+        });
+  
+        return updatedTasks;
+      });
+      await fetchTasks();
+      message.success('Sub-Subtask added successfully');
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error('Error adding sub-subtask:', error);
+      message.error(`Error adding sub-subtask: ${error.message}`);
+    }
+  };
+  
+  const handleDeleteSubSubtask = async (subSubtaskId, subtaskId, category) => {
+    try {
+      await tasksApi.DeleteSubSubtask(subSubtaskId);
+  
+      setTasks((prevTasks) => {
+        const updatedTasks = { ...prevTasks };
+  
+        updatedTasks[category] = updatedTasks[category].map((task) => {
+          return {
+            ...task,
+            subtasks: task.subtasks.map((subtask) => {
+              if (subtask.id === subtaskId) {
+                return {
+                  ...subtask,
+                  subsubtasks: subtask.subsubtasks.filter(
+                    (subsubtask) => subsubtask.id !== subSubtaskId
+                  )
+                };
+              }
+              return subtask;
+            })
+          };
+        });
+  
+        return updatedTasks;
+      });
+  
+      message.success('Sub-Subtask deleted successfully');
+    } catch (error) {
+      console.error('Error deleting sub-subtask:', error);
+      message.error(`Error deleting sub-subtask: ${error.message}`);
+    }
+  };
+  
   
   const handleCompleteTask = async (taskId, category) => {
     try {
@@ -95,12 +197,15 @@ const Dashboard = () => {
     }
   };
 
-  const showModal = () => {
+  const showModal = (type = 'task', subtask = null) => {
+    setFormType(type);
+    setSelectedSubtask(subtask);
     setIsModalVisible(true);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setFormType('task')
   };
 
   const onDragEnd = (result) => {
@@ -159,10 +264,10 @@ const Dashboard = () => {
         <div className="animated-background"></div>
         {showConfetti && <Confetti />}
         <div className="lists-container">
-          <TodoList title="Running" tasks={tasks.running} onDelete={handleDeleteTask} />
-          <TodoList title="Gym" tasks={tasks.gym} onDelete={handleDeleteTask} />
-          <TodoList title="Nutrition" tasks={tasks.nutrition} onDelete={handleDeleteTask} />
-          <TodoList title="Recovery" tasks={tasks.recovery} onDelete={handleDeleteTask} />
+          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
+          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
+          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
+          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
           <Droppable droppableId="completed">
             {(provided, snapshot) => (
               <div
@@ -195,10 +300,18 @@ const Dashboard = () => {
           onCancel={handleCancel}
           footer={null}
         >
-          <AddTaskForm
-            categories={['Running', 'Gym', 'Nutrition', 'Recovery']}
-            onAddTask={handleAddTask}
-          />
+          {formType === 'task' ? (
+            <AddTaskForm
+              categories={['Running', 'Gym', 'Nutrition', 'Recovery']}
+              onAddTask={handleAddTask}
+            />
+          ) : formType === 'subsubtask' && selectedSubtask ? (
+            <AddTaskForm
+              categories={['Running', 'Gym', 'Nutrition', 'Recovery']}
+              formType="subsubtask"
+              onAddTask={(newSubSubtask) => handleAddSubSubtask(selectedSubtask.id, newSubSubtask)}
+            />
+          ) : null}
         </Modal>
       </div>
     </DragDropContext>

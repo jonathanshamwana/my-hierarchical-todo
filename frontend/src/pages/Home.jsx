@@ -1,6 +1,6 @@
 import React from 'react';
-import ParticlesBackground from './ParticlesBackground';
-import '../../styles/Home.css';
+import ParticlesBackground from '../components/General/ParticlesBackground';
+import '../styles/Home.css';
 
 function Home() {
   return (

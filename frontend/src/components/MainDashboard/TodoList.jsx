@@ -3,7 +3,7 @@ import TaskItem from './TaskItem';
 import '../../styles/TodoList.css';
 import { Droppable } from 'react-beautiful-dnd';
 
-const TodoList = ({ title, tasks, onDelete }) => {
+const TodoList = ({ title, tasks, onDelete, onAddSubSubtask }) => {
   return (
     <Droppable droppableId={title.toLowerCase()}>
       {(provided, snapshot) => (
@@ -21,7 +21,7 @@ const TodoList = ({ title, tasks, onDelete }) => {
           
           <div className="todo-list-tasks">
             {tasks.map((task, index) => (
-              <TaskItem key={task.id} task={task} index={index} onDelete={onDelete} />
+              <TaskItem key={task.id} task={task} index={index} onDelete={onDelete} category={title} onAddSubSubtask={onAddSubSubtask} />
             ))}
             {provided.placeholder}
           </div>
