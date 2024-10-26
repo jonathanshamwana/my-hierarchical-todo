@@ -264,10 +264,10 @@ const Dashboard = () => {
         <div className="animated-background"></div>
         {showConfetti && <Confetti />}
         <div className="lists-container">
-          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
-          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
-          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
-          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} />
+          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
           <Droppable droppableId="completed">
             {(provided, snapshot) => (
               <div

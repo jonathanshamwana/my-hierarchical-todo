@@ -19,7 +19,7 @@ const fetchTasks = async () => {
   });
 };
 
-const AddTask = (newTask) => {
+const AddTask = async (newTask) => {
   const token = sessionStorage.getItem('token'); 
   console.log('Token:', token);
   console.log('New Task Data:', newTask);
@@ -40,7 +40,7 @@ const AddTask = (newTask) => {
   });
 };
 
-const DeleteTask = (taskId) => {
+const DeleteTask = async (taskId) => {
   const token = sessionStorage.getItem('token'); 
 
   return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
@@ -56,7 +56,7 @@ const DeleteTask = (taskId) => {
   });
 };
 
-const DeleteSubtask = (subtaskId) => {
+const DeleteSubtask = async (subtaskId) => {
   const token = sessionStorage.getItem('token'); 
 
   fetch(`${API_BASE_URL}/api/tasks/subtasks/${subtaskId}`, {
@@ -73,7 +73,7 @@ const DeleteSubtask = (subtaskId) => {
   });
 };
 
-const AddSubSubtask = (subtaskId, newSubSubtask) => {
+const AddSubSubtask = async (subtaskId, newSubSubtask) => {
   const token = sessionStorage.getItem('token'); 
 
   return fetch(`${API_BASE_URL}/api/tasks/subtasks/${subtaskId}/subsubtasks`, {
@@ -91,7 +91,7 @@ const AddSubSubtask = (subtaskId, newSubSubtask) => {
   });
 };
 
-const DeleteSubSubtask = (subSubtaskId) => {
+const DeleteSubSubtask = async (subSubtaskId) => {
   const token = sessionStorage.getItem('token'); 
 
   console.log(`ENDPOINT: ${`${API_BASE_URL}/api/tasks/subsubtasks/${subSubtaskId}`}`)
@@ -108,7 +108,7 @@ const DeleteSubSubtask = (subSubtaskId) => {
   });
 };
 
-const CompleteTask = (taskId) => {
+const CompleteTask = async (taskId) => {
   const token = sessionStorage.getItem('token'); 
   
   return fetch(`${API_BASE_URL}/api/tasks/complete/${taskId}`, {
@@ -132,4 +132,25 @@ const CompleteTask = (taskId) => {
   });
 };
 
-export default { fetchTasks, AddTask, AddSubSubtask, DeleteSubSubtask, DeleteTask, DeleteSubtask, CompleteTask };
+const UpdateItem = async (itemId, itemType, newDescription) => {
+  const token = sessionStorage.getItem('token');
+
+  const response = await fetch(`${API_BASE_URL}/api/tasks/update`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: itemId,
+      type: itemType,
+      description: newDescription
+    })
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update item');
+  }
+  return await response.json();
+};
+
+export default { fetchTasks, AddTask, AddSubSubtask, DeleteSubSubtask, DeleteTask, DeleteSubtask, CompleteTask, UpdateItem };

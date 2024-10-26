@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Popconfirm } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Popconfirm, Input, message } from 'antd';
+import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import SubSubtask from './SubSubtask';
+import tasksApi from '../../api/tasksApi';
 import '../../styles/TaskItem.css';
 
-const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category }) => {
+const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category, refreshTasks }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [showSubSubtasks, setShowSubSubtasks] = useState({});
+  const [isEditing, setIsEditing] = useState(null);
+  const [editValue, setEditValue] = useState('');
 
   const handleToggleSubtasks = () => {
     setShowSubtasks(!showSubtasks);
@@ -18,6 +21,23 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category }) => {
       ...prevState,
       [subtaskId]: !prevState[subtaskId],
     }));
+  };
+
+  const startEditing = (item, type) => {
+    setIsEditing({ id: item.id, type });
+    setEditValue(item.description);
+  };
+
+  const saveEdit = async () => {
+    try {
+      await tasksApi.UpdateItem(isEditing.id, isEditing.type, editValue);
+      setIsEditing(null);
+      await refreshTasks();
+      message.success("Task updated successfully")
+    } catch (e) {
+      console.error("Failed to update task")
+      message.error("Failed to update task")
+    } 
   };
 
   return (
@@ -35,9 +55,19 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category }) => {
               border: task.subtasks && task.subtasks.length > 0 ? '4px solid #ccc' : '4px solid #ffff'
             }}
           >
-            <span className="task-description" onClick={handleToggleSubtasks}>
-              {task.description}
-            </span>
+            {isEditing && isEditing.id === task.id && isEditing.type === 'task' ? (
+              <Input
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={saveEdit}
+                onPressEnter={saveEdit}
+              />
+            ) : (
+              <span className="task-description" onClick={handleToggleSubtasks}>
+                {task.description}
+              </span>
+            )}
+            <EditOutlined onClick={() => startEditing(task, 'task')} style={{ marginLeft: '10px', cursor: 'pointer' }} />
             <Popconfirm
               title="Are you sure to delete this task?"
               onConfirm={() => onDelete(task.id, category, 'task')}
@@ -76,13 +106,23 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category }) => {
                               border: subtask.subsubtasks && subtask.subsubtasks.length > 0 ? '2px solid #1E3E62' : '2px solid #ffff',
                             }}
                           >
-                            <span onClick={() => handleToggleSubSubtasks(subtask.id)}>
-                              {subtask.description}
-                            </span>
+                            {isEditing && isEditing.id === subtask.id && isEditing.type === 'subtask' ? (
+                              <Input
+                                value={editValue}
+                                onChange={(e) => setEditValue(e.target.value)}
+                                onBlur={saveEdit}
+                                onPressEnter={saveEdit}
+                              />
+                            ) : (
+                              <span onClick={() => handleToggleSubSubtasks(subtask.id)}>
+                                {subtask.description}
+                              </span>
+                            )}
+                            <EditOutlined onClick={() => startEditing(subtask, 'subtask')} style={{ marginLeft: '10px', cursor: 'pointer' }} />
                             <div style={{ display: 'flex', gap: '10px' }}>
                               <PlusOutlined
                                 onClick={() => onAddSubSubtask(subtask)}
-                                style={{ color: '#52c41a', cursor: 'pointer' }}
+                                style={{ color: '#52c41a', cursor: 'pointer', marginLeft: '5px' }}
                               />
                               <Popconfirm
                                 title="Are you sure to delete this subtask?"
@@ -106,6 +146,7 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category }) => {
                               subsubtask={subsubtask}
                               category={category}
                               onDelete={onDelete}
+                              refreshTasks={refreshTasks}
                             />
                           ))}
                         </div>
