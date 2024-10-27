@@ -156,6 +156,27 @@ def delete_subtask(current_user_id, subtask_id):
 
     return jsonify({'message': 'Subtask and sub-subtasks deleted'}), 200
 
+@tasks_bp.route('/<int:task_id>/subtasks', methods=['POST'])
+@token_required
+def create_subtask(current_user_id, task_id):
+    """
+    Create a new subtask for a specified task.
+    """
+    task = Task.query.get(task_id)
+    
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    data = request.get_json()
+    new_subtask = Subtask(
+        description=data['description'],
+        task_id=task_id
+    )
+    db.session.add(new_subtask)
+    db.session.commit()
+
+    return jsonify({'message': 'Subbtask created', 'subtask_id': new_subtask.id}), 201
+
 @tasks_bp.route('/subtasks/<int:subtask_id>/subsubtasks', methods=['POST'])
 @token_required
 def create_subsubtask(current_user_id, subtask_id):

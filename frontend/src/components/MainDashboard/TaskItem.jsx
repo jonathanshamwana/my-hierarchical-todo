@@ -6,7 +6,7 @@ import SubSubtask from './SubSubtask';
 import tasksApi from '../../api/tasksApi';
 import '../../styles/TaskItem.css';
 
-const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category, refreshTasks }) => {
+const TaskItem = ({ task, index, onDelete, onAddSubtask, onAddSubSubtask, category, refreshTasks }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [showSubSubtasks, setShowSubSubtasks] = useState({});
   const [isEditing, setIsEditing] = useState(null);
@@ -67,6 +67,7 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category, refreshTas
                 {task.description}
               </span>
             )}
+            <PlusOutlined onClick={() => onAddSubtask(task)} style={{ color: '#52c41a', cursor: 'pointer', marginLeft: '5px' }}/>
             <EditOutlined onClick={() => startEditing(task, 'task')} style={{ marginLeft: '10px', cursor: 'pointer' }} />
             <Popconfirm
               title="Are you sure to delete this task?"
@@ -140,7 +141,9 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category, refreshTas
                       </Draggable>
                       {showSubSubtasks[subtask.id] && subtask.subsubtasks && (
                         <div className="subsubtasks-container">
-                          {subtask.subsubtasks.map((subsubtask) => (
+                        {subtask.subsubtasks.map((subsubtask) => {
+                          console.log(subsubtask.description);
+                          return (
                             <SubSubtask
                               key={subsubtask.id}
                               subsubtask={subsubtask}
@@ -148,8 +151,9 @@ const TaskItem = ({ task, index, onDelete, onAddSubSubtask, category, refreshTas
                               onDelete={onDelete}
                               refreshTasks={refreshTasks}
                             />
-                          ))}
-                        </div>
+                          );
+                        })}
+                      </div>
                       )}
                     </div>
                   ))}

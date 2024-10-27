@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [formType, setFormType] = useState('task');
   const [completedTasks, setCompletedTasks] = useState([]);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false)
   const [tasks, setTasks] = useState({
     running: [],
@@ -73,16 +74,16 @@ const Dashboard = () => {
   
   const handleDeleteTask = async (taskId, category, taskType = 'task') => {
     try {
-      if (taskType == 'task') {
+      if (taskType === 'task') {
         await tasksApi.DeleteTask(taskId);
-      } else if (taskType == 'subtask') {
+      } else if (taskType === 'subtask') {
         await tasksApi.DeleteSubtask(taskId);
-      } else if (taskType == 'subsubtask') {
+      } else if (taskType === 'subsubtask') {
         await tasksApi.DeleteSubSubtask(taskId);
       }
   
       setTasks((prevTasks) => {
-        if (taskType == 'subtask') {
+        if (taskType === 'subtask') {
           const updatedTasks = prevTasks[category]?.map((task) =>
             task.subtasks ? {
               ...task,
@@ -104,9 +105,32 @@ const Dashboard = () => {
       });
       
       await fetchTasks();
-      message.success(taskType == 'subtask' ? 'Subtask deleted' : 'Task deleted');
+      message.success(taskType === 'subtask' ? 'Subtask deleted' : 'Task deleted');
     } catch (error) {
-      message.error(`Error deleting ${taskType == 'subtask' ? 'subtask' : 'task'}: ${error.message}`);
+      message.error(`Error deleting ${taskType === 'subtask' ? 'subtask' : 'task'}: ${error.message}`);
+    }
+  };
+
+  const handleAddSubtask = async (taskId, newSubtask) => {
+    try {
+      const data = await tasksApi.AddSubtask(taskId, newSubtask);
+      setTasks((prevTasks) => {
+        const updatedTasks = { ...prevTasks };
+        Object.keys(updatedTasks).forEach((category) => {
+          updatedTasks[category] = updatedTasks[category].map((task) => {
+            if (task.id === taskId) {
+              return { ...task, subtasks: [...task.subtasks, data] };
+            }
+            return task;
+          });
+        });
+        return updatedTasks;
+      });
+      await fetchTasks();
+      message.success('Subtasks added successfully');
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error(`Error adding subtask: ${error.message}`);
     }
   };
 
@@ -137,48 +161,13 @@ const Dashboard = () => {
         return updatedTasks;
       });
       await fetchTasks();
-      message.success('Sub-Subtask added successfully');
+      message.success('Sub-Subtasks added successfully');
       setIsModalVisible(false);
     } catch (error) {
       console.error('Error adding sub-subtask:', error);
       message.error(`Error adding sub-subtask: ${error.message}`);
     }
   };
-  
-  const handleDeleteSubSubtask = async (subSubtaskId, subtaskId, category) => {
-    try {
-      await tasksApi.DeleteSubSubtask(subSubtaskId);
-  
-      setTasks((prevTasks) => {
-        const updatedTasks = { ...prevTasks };
-  
-        updatedTasks[category] = updatedTasks[category].map((task) => {
-          return {
-            ...task,
-            subtasks: task.subtasks.map((subtask) => {
-              if (subtask.id === subtaskId) {
-                return {
-                  ...subtask,
-                  subsubtasks: subtask.subsubtasks.filter(
-                    (subsubtask) => subsubtask.id !== subSubtaskId
-                  )
-                };
-              }
-              return subtask;
-            })
-          };
-        });
-  
-        return updatedTasks;
-      });
-  
-      message.success('Sub-Subtask deleted successfully');
-    } catch (error) {
-      console.error('Error deleting sub-subtask:', error);
-      message.error(`Error deleting sub-subtask: ${error.message}`);
-    }
-  };
-  
   
   const handleCompleteTask = async (taskId, category) => {
     try {
@@ -197,9 +186,12 @@ const Dashboard = () => {
     }
   };
 
-  const showModal = (type = 'task', subtask = null) => {
-    setFormType(type);
+  const showModal = (modalType = 'task', task = null, subtask = null) => {
+    setFormType(modalType);
+    setSelectedTask(task)
     setSelectedSubtask(subtask);
+    console.log(selectedSubtask)
+    console.log(subtask)
     setIsModalVisible(true);
   };
 
@@ -264,10 +256,10 @@ const Dashboard = () => {
         <div className="animated-background"></div>
         {showConfetti && <Confetti />}
         <div className="lists-container">
-          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubSubtask={(subtask) => showModal('subsubtask', subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
+          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
           <Droppable droppableId="completed">
             {(provided, snapshot) => (
               <div
@@ -290,7 +282,7 @@ const Dashboard = () => {
         {error && <div className="error-message">{error}</div>}
 
         <div className="add-task-button-wrapper">
-          <button className="add-task-button" onClick={showModal}>
+          <button className="add-task-button" onClick={() => showModal('task')}>
             Add Task
           </button>
         </div>
@@ -303,7 +295,14 @@ const Dashboard = () => {
           {formType === 'task' ? (
             <AddTaskForm
               categories={['Running', 'Gym', 'Nutrition', 'Recovery']}
+              formType="task"
               onAddTask={handleAddTask}
+            />
+          ) : formType === 'subtask' && selectedTask ? (
+            <AddTaskForm 
+              categories={['Running', 'Gym', 'Nutrition', 'Recovery']}
+              formType='subtask'
+              onAddTask={(newSubtask) => handleAddSubtask(selectedTask.id, newSubtask)}
             />
           ) : formType === 'subsubtask' && selectedSubtask ? (
             <AddTaskForm

@@ -56,6 +56,24 @@ const DeleteTask = async (taskId) => {
   });
 };
 
+const AddSubtask = async (taskId, newSubtask) => {
+  const token = sessionStorage.getItem('token');
+
+  return fetch(`${API_BASE_URL}/api/tasks/${taskId}/subtasks`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(newSubtask),
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Failed to add subtask');
+    }
+    return response.json();
+  });
+}
+
 const DeleteSubtask = async (subtaskId) => {
   const token = sessionStorage.getItem('token'); 
 
@@ -153,4 +171,4 @@ const UpdateItem = async (itemId, itemType, newDescription) => {
   return await response.json();
 };
 
-export default { fetchTasks, AddTask, AddSubSubtask, DeleteSubSubtask, DeleteTask, DeleteSubtask, CompleteTask, UpdateItem };
+export default { fetchTasks, AddTask, AddSubtask, AddSubSubtask, DeleteTask, DeleteSubtask, DeleteSubSubtask, CompleteTask, UpdateItem };
