@@ -23,6 +23,7 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API_BASE_URL = 'http://127.0.0.1:5000';
 
   const fetchTasks = async () => {
     try {
@@ -168,21 +169,26 @@ const Dashboard = () => {
       message.error(`Error adding sub-subtask: ${error.message}`);
     }
   };
-  
-  const handleCompleteTask = async (taskId, category) => {
+
+  const handleCompleteTask = async (itemId, itemType, category) => {
     try {
-      await tasksApi.CompleteTask(taskId);
-      setTasks((prevTasks) => ({
-        ...prevTasks,
-        [category]: prevTasks[category].filter((task) => task.id !== taskId),
-      }));
-      setCompletedTasks((prevCompleted) => [...prevCompleted, taskId]);
-      await fetchTasks();
-      message.success('Task completed! 🎉');
+      if (itemType === 'task') {
+        await tasksApi.CompleteTask(itemId);
+        setTasks(prevTasks => ({
+          ...prevTasks,
+          [category]: prevTasks[category].filter(task => task.id !== itemId),
+        }));
+      } else if (itemType === 'subtask') {
+        await tasksApi.CompleteSubtask(itemId);
+      } else if (itemType === 'subsubtask') {
+        await tasksApi.CompleteSubSubtask(itemId);
+      }
+      message.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} completed successfully! 🎉`);
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 6000);
+      await fetchTasks();
     } catch (error) {
-      message.error(`Error completing task: ${error.message}`);
+      message.error(`Error completing ${itemType}: ${error.message}`);
     }
   };
 
@@ -202,34 +208,30 @@ const Dashboard = () => {
 
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
-  
     if (!destination) return;
   
-    const sourceCategory = tasks[source.droppableId];
-    const destinationCategory = tasks[destination.droppableId];
+    const [itemType, itemId] = draggableId.split('-');
+    const isCompletedDropzone = destination.droppableId === 'completed';
   
-    if (!sourceCategory) {
-      console.error(`Source category ${source.droppableId} not found`);
+    if (isCompletedDropzone) {
+      console.log("HANDLE COMPLETE TASK")
+      handleCompleteTask(parseInt(itemId, 10), itemType, source.droppableId);
       return;
     }
-
-    const taskId = draggableId.replace('task-', '');
   
-    if (destination.droppableId === 'completed') {
-      const sourceCategory = source.droppableId
-      handleCompleteTask(taskId, sourceCategory);
-    } else if (source.droppableId !== destination.droppableId) {
+    if (itemType === 'task' && source.droppableId !== destination.droppableId) {
+      const sourceCategoryTasks = tasks[source.droppableId];
+      const destinationCategoryTasks = tasks[destination.droppableId];
   
-      const draggedTask = sourceCategory.find(task => task.id.toString() === taskId);
+      const draggedTask = sourceCategoryTasks.find((task) => task.id.toString() === itemId);
   
       if (!draggedTask) {
-        console.error(`Task ${taskId} not found in category ${source.droppableId}`);
+        console.error(`Task ${itemId} not found in category ${source.droppableId}`);
         return;
       }
   
-      const newSourceTasks = sourceCategory.filter(task => `task-${task.id}` !== draggableId);
-  
-      const newDestinationTasks = [...destinationCategory, draggedTask];
+      const newSourceTasks = sourceCategoryTasks.filter((task) => task.id.toString() !== itemId);
+      const newDestinationTasks = [...destinationCategoryTasks, draggedTask];
   
       setTasks((prevTasks) => ({
         ...prevTasks,
@@ -237,18 +239,16 @@ const Dashboard = () => {
         [destination.droppableId]: newDestinationTasks,
       }));
   
-      fetch(`http://127.0.0.1:5000/api/tasks/${draggedTask.id}`, {
+      fetch(`${API_BASE_URL}/api/tasks/${draggedTask.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ category: destination.droppableId }),
-      })
-      .catch((error) => message.error('Error moving task'));
+      }).catch((error) => message.error('Error moving task'));
     }
   };
-  
-  
+
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>

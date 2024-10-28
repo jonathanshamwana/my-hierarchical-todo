@@ -150,6 +150,40 @@ const CompleteTask = async (taskId) => {
   });
 };
 
+const CompleteSubtask = async (subtaskId) => {
+  const token = sessionStorage.getItem('token'); 
+
+  return fetch(`${API_BASE_URL}/api/tasks/subtasks/complete/${subtaskId}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json', 
+    }
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Failed to complete subtask');
+    }
+    return response.json();
+  });
+};
+
+const CompleteSubSubtask = async (subSubtaskId) => {
+  const token = sessionStorage.getItem('token'); 
+
+  return fetch(`${API_BASE_URL}/api/tasks/subsubtasks/complete/${subSubtaskId}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json', 
+    }
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Failed to complete sub-subtask');
+    }
+    return response.json();
+  });
+};
+
 const UpdateItem = async (itemId, itemType, newDescription) => {
   const token = sessionStorage.getItem('token');
 
@@ -171,4 +205,21 @@ const UpdateItem = async (itemId, itemType, newDescription) => {
   return await response.json();
 };
 
-export default { fetchTasks, AddTask, AddSubtask, AddSubSubtask, DeleteTask, DeleteSubtask, DeleteSubSubtask, CompleteTask, UpdateItem };
+const GetCompletedTasks = async () => {
+  const token = sessionStorage.getItem('token'); 
+
+  return fetch(`${API_BASE_URL}/api/tasks/completed`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    }
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error('Failed to fetch completed tasks');
+    }
+    return response.json();
+  });
+};
+
+export default { fetchTasks, AddTask, AddSubtask, AddSubSubtask, DeleteTask, DeleteSubtask, DeleteSubSubtask, CompleteTask, CompleteSubtask, CompleteSubSubtask, GetCompletedTasks, UpdateItem };
