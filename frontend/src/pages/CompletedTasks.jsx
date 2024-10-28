@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import ParticlesBackground from '../components/General/ParticlesBackground';
+import tasksApi from '../api/tasksApi';
 import '../styles/CompletedTasks.css'; 
 
 const CompletedTasks = () => {
     const [completedTasks, setCompletedTasks] = useState([]);
   
     useEffect(() => {
-      fetch('http://127.0.0.1:5000/api/tasks/completed')
-        .then((response) => response.json())
+      tasksApi.GetCompletedTasks()
         .then((data) => setCompletedTasks(data))
         .catch((error) => console.error('Error fetching completed tasks:', error));
     }, []);
   
     return (
       <div className="completed-tasks-container">
+        <div className="animated-background"></div>
+        <ParticlesBackground />
         <h2 className="completed-tasks-heading ">Completed Tasks</h2>
         <div>
           {completedTasks.map((task) => (

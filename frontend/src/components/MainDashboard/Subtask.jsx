@@ -38,10 +38,10 @@ const Subtask = ({ subtask, index, onAddSubSubtask, onDelete, category, refreshT
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                border: subtask.subsubtasks && subtask.subsubtasks.length > 0 ? '2px solid #1E3E62' : '2px solid #ffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              border: subtask.subsubtasks && subtask.subsubtasks.length > 0 ? '2px solid #1E3E62' : '2px solid #ffff',
             }}
           >
             {isEditing ? (
@@ -68,15 +68,15 @@ const Subtask = ({ subtask, index, onAddSubSubtask, onDelete, category, refreshT
         )}
       </Draggable>
 
-      {/* Sub-Subtasks rendered outside of main subtask item */}
       {showSubSubtasks && subtask.subsubtasks && (
         <Droppable droppableId={`subsubtasks-${subtask.id}`} type="subsubtask">
           {(provided) => (
             <div ref={provided.innerRef} {...provided.droppableProps} className="subsubtasks-container">
-              {subtask.subsubtasks.map((subsubtask) => (
+              {subtask.subsubtasks.map((subsubtask, subsubIndex) => (
                 <SubSubtask
                   key={subsubtask.id}
                   subsubtask={subsubtask}
+                  index={subsubIndex}
                   category={category}
                   onDelete={onDelete}
                   refreshTasks={refreshTasks}
@@ -92,4 +92,3 @@ const Subtask = ({ subtask, index, onAddSubSubtask, onDelete, category, refreshT
 };
 
 export default Subtask;
-

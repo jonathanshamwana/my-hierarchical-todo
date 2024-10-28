@@ -13,18 +13,6 @@
   100% { background-position: 0% 50%; }
 }
 
-.animated-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background: linear-gradient(270deg, #cfd9df, #e2ebf0, #e1d8f1, #cfd9df);
-  background-size: 400% 400%;
-  animation: gradientAnimation 15s ease infinite;
-}
-
 .dashboard-title {
   text-align: center;
   font-size: 36px;
