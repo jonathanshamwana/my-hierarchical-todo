@@ -35,6 +35,22 @@
   transition: background-color 0.2s ease-in-out;
 }
 
+.subtasks-container {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+.subtask-item {
+  padding: 8px;
+  background-color: var(--subtask-bg-color);
+  border-radius: var(--border-radius);
+  color: var(--text-color); 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .delete-icon {
   color: rgba(255, 0, 0, 0.535);
   cursor: pointer;
