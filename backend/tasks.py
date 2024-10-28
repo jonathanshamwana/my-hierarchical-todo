@@ -243,6 +243,46 @@ def complete_task(current_user_id, task_id):
 
     return jsonify({'message': 'Task completed successfully'}), 201
 
+@tasks_bp.route('/subtasks/complete/<int:subtask_id>', methods=['POST'])
+@token_required
+def complete_subtask(current_user_id, subtask_id):
+    """
+    Mark a subtask as completed, remove it from active subtasks, and store in CompletedTask if applicable.
+    """
+    subtask = Subtask.query.get_or_404(subtask_id)
+    task = Task.query.get(subtask.task_id)
+
+    # Check if the subtask belongs to the current user
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    # Mark subtask as completed (you can choose to delete or update status)
+    db.session.delete(subtask)
+    db.session.commit()
+
+    return jsonify({'message': 'Subtask completed successfully'}), 200
+
+@tasks_bp.route('/subsubtasks/complete/<int:subsubtask_id>', methods=['POST'])
+@token_required
+def complete_subsubtask(current_user_id, subsubtask_id):
+    """
+    Mark a sub-subtask as completed, remove it from active sub-subtasks, and store in CompletedTask if applicable.
+    """
+    subsubtask = SubSubtask.query.get_or_404(subsubtask_id)
+    subtask = Subtask.query.get(subsubtask.subtask_id)
+    task = Task.query.get(subtask.task_id)
+
+    # Check if the sub-subtask belongs to the current user
+    if task.user_id != current_user_id:
+        return jsonify({'message': 'Permission denied'}), 403
+
+    # Mark sub-subtask as completed (you can choose to delete or update status)
+    db.session.delete(subsubtask)
+    db.session.commit()
+
+    return jsonify({'message': 'Sub-Subtask completed successfully'}), 200
+
+
 @tasks_bp.route('/completed', methods=['GET'])
 @token_required
 def get_completed_tasks(current_user_id):
