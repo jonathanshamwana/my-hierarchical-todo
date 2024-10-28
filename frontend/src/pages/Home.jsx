@@ -9,7 +9,7 @@ function Home() {
       <ParticlesBackground />
       <h1 className="home-heading patrick-hand-regular">WELCOME TO 26CLUB</h1>
       <h3 className="home-subheading patrick-hand-regular">TRACK WHAT MATTERS, TRANSFORM YOUR MARATHON</h3>
-      <img src="/images/kipchoge-ineos.png" alt="Demo" className="demo-image" />
+      <img src="/images/kipchoge-product.jpg" alt="Demo" className="demo-image" />
       <div className="cta-container">
         <a href="/signup" className="cta-button">Join for Free</a>
       </div>
