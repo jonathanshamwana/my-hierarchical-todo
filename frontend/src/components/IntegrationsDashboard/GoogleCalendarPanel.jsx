@@ -1,6 +1,17 @@
 import React from 'react';
 import '../../styles/IntegrationsDashboard.css';
 
+/**
+ * GoogleCalendarPanel component - Displays Google Calendar integration information.
+ * Allows users to integrate their Google Calendar for enhanced task management.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <GoogleCalendarPanel />
+ * 
+ * @returns {JSX.Element} A panel with Google Calendar integration details.
+ */
 const GoogleCalendarPanel = () => {
   return (
     <div className="integration-panel google-calendar">

@@ -1,7 +1,7 @@
 import React from 'react';
 import TaskItem from './TaskItem'; 
-import '../../styles/TodoList.css';
 import { Droppable } from 'react-beautiful-dnd';
+import '../../styles/MainDashboard/TodoList.css';
 
 const TodoList = ({ title, tasks, onDelete, onAddSubtask, onAddSubSubtask, refreshTasks }) => {
   return (

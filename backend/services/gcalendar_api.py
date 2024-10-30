@@ -6,6 +6,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import datetime
 import os
+from tasks import token_required
 
 calendar_bp = Blueprint('calendar', __name__)
 
@@ -39,7 +40,8 @@ def get_calendar_service():
 
 # Endpoint to initialize credentials if not already done
 @calendar_bp.route('/initialize-credentials', methods=['GET'])
-def init_credentials():
+@token_required
+def init_credentials(current_user_id):
     try:
         initialize_credentials()
         return jsonify({"status": "Credentials initialized successfully"}), 200
@@ -48,7 +50,8 @@ def init_credentials():
         return jsonify({"error": "Failed to initialize credentials"}), 500
 
 @calendar_bp.route('/get-upcoming-events', methods=['GET'])
-def get_upcoming_events():
+@token_required
+def get_upcoming_events(current_user_id):
     try:
         service = get_calendar_service()
         now = datetime.datetime.utcnow().isoformat() + 'Z'
@@ -68,7 +71,8 @@ def get_upcoming_events():
         return jsonify({"error": "Failed to fetch events"}), 500
 
 @calendar_bp.route('/create-event', methods=['POST'])
-def create_event():
+@token_required
+def create_event(current_user_id):
     try:
         service = get_calendar_service()
         event_data = request.json

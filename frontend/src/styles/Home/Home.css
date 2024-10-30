@@ -28,42 +28,6 @@
   animation: gradientAnimation 10s ease infinite;
 }
 
-.demo-image {
-  width: 100%;
-  max-width: 800px;
-  height: auto;
-  margin: 20px auto 20px;
-  display: block;
-  border-radius: var(--border-radius);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  filter: brightness(0.99) contrast(0.9) sepia(0.2);
-}
-
-.cta-container {
-  max-width: 900px;
-  width: 100%;
-  margin: 20px auto;
-}
-
-.cta-button {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 15px;
-  text-decoration: none;
-  border-radius: var(--border-radius);
-  font-size: 18px;
-  font-weight: bold;
-  transition: background-color 0.3s;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.cta-button:hover {
-  background-color: var(--accent-color);
-}
-
 .wave-container {
   position: relative;
   width: 100%;
@@ -80,13 +44,54 @@
   height: auto;
 }
 
-.home-subheading {
-  margin-top: 6px;
-  color: rgb(114, 109, 109)
+.hero-section {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.patrick-hand-regular {
+.hero-heading {
+  font-size: 2.5rem;
+  color: var(--primary-color);
   font-family: "Patrick Hand", cursive;
   font-weight: 600;
   font-style: normal;
+  margin-bottom: 20px;
+}
+
+.hero-subheading {
+  font-size: 1.5rem;
+  margin-top: 6px;
+  color: rgb(114, 109, 109);
+  font-family: "Patrick Hand", cursive;
+}
+
+.hero-image {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  filter: brightness(0.99) contrast(0.9) sepia(0.2);
+  margin: 20px auto;
+}
+
+.cta-container {
+  margin-top: 20px;
+}
+
+.cta-button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px 30px;
+  border-radius: var(--border-radius);
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button:hover {
+  background-color: var(--accent-color);
 }

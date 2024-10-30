@@ -287,17 +287,36 @@ def complete_subsubtask(current_user_id, subsubtask_id):
 @token_required
 def get_completed_tasks(current_user_id):
     """
-    Retrieve all completed tasks for the authenticated user.
+    Retrieve all completed tasks for the authenticated user, including subtasks and sub-subtasks.
     """
     completed_tasks = CompletedTask.query.filter_by(user_id=current_user_id).all()
-    task_list = [{
-        'id': task.id,
-        'description': task.description,
-        'subtasks': task.subtasks,
-        'completion_date': task.completion_date
-    } for task in completed_tasks]
+    task_list = []
+
+    for task in completed_tasks:
+        # Fetch subtasks and sub-subtasks for each completed task
+        subtasks = Subtask.query.filter_by(task_id=task.id).all()
+        
+        subtask_data = []
+        for subtask in subtasks:
+            subsubtasks = SubSubtask.query.filter_by(subtask_id=subtask.id).all()
+            subsubtask_descriptions = [subsubtask.description for subsubtask in subsubtasks]
+            
+            subtask_data.append({
+                'id': subtask.id,
+                'description': subtask.description,
+                'subsubtasks': subsubtask_descriptions
+            })
+
+        task_list.append({
+            'id': task.id,
+            'description': task.description,
+            'subtasks': subtask_data,
+            'completion_date': task.completion_date
+        })
 
     return jsonify(task_list), 200
+
+
 
 @tasks_bp.route('/update', methods=['PUT'])
 @token_required

@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import { message } from 'antd';
-import ParticlesBackground from '../components/General/ParticlesBackground';
-import { signupUser } from '../api/authApi';
+import authApi from '../api/authApi';
 import { useNavigate } from 'react-router-dom'
-import '../styles/Signup.css';
+import '../styles/Auth/Signup.css';
 
+/**
+ * Signup component provides a user registration form with name, email, and password fields.
+ * On submission, it registers a new user using the `signupUser` API function and stores 
+ * the user token in session storage, then navigates to the dashboard.
+ * Displays success or error messages based on the signup attempt.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <Signup />
+ * 
+ * @returns {JSX.Element} A signup form component.
+ */
 function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,7 +33,7 @@ function Signup() {
     };
 
     try {
-      const response = await signupUser(userData);
+      const response = await authApi.SignupUser(userData);
       sessionStorage.setItem('token', response.token);
 
       message.success("Account created")
@@ -35,7 +46,6 @@ function Signup() {
   return (
     <div className="signup-container">
       <div className="animated-background"></div>
-      <ParticlesBackground />
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
         <label>First name:</label>

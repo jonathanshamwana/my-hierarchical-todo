@@ -1,6 +1,6 @@
 :root {
   --primary-color: #1E3E62; 
-  --accent-color: #FF6500; 
+  --accent-color: #9B7EBD; 
   --secondary-color: #f7f7f7; 
   --subtask-bg-color: #e0e0e0d2;
   --text-color: #333333; 
@@ -23,7 +23,7 @@
 .dashboard {
   margin: 0 auto;
   position: relative;
-  padding: 80px 100px;
+  padding: 25px 100px 75px 100px;
   min-height: 100vh;
   overflow: hidden;
 }
@@ -33,14 +33,6 @@
   grid-template-columns: repeat(5, 1fr); 
   gap: 20px;
   margin-bottom: 20px; 
-}
-
-.completed-dropzone {
-  border-radius: 12px;
-  border: 3px solid rgb(62, 123, 62);
-  padding: 20px;
-  text-align: center;
-  height: 100%;
 }
 
 .add-task-button-wrapper {
@@ -76,4 +68,34 @@
   text-align: center;
 }
   
-  
+/* Centering the Switch container */
+.smart-scheduler-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+}
+
+/* Custom label styling */
+.smart-scheduler-label {
+  font-size: 22px;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* Override MUI Switch colors and sizing */
+.MuiSwitch-root {
+  width: 100px;
+  height: 34px;
+  padding: 8px;
+}
+
+.MuiSwitch-switchBase {
+  padding: 6px;
+  &.Mui-checked {
+    color: var(--accent-color);
+  }
+  &.Mui-checked + .MuiSwitch-track {
+    background-color: var(--accent-color);
+  }
+}

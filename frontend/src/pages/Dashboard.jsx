@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import TodoList from '../components/MainDashboard/TodoList';
+import CompletedDropzone from '../components/MainDashboard/CompletionDropzone';
 import AddTaskForm from '../components/MainDashboard/AddTaskForm';
 import tasksApi from '../api/tasksApi';
+import taskSchedulerApi from '../api/taskSchedulerApi';
+import SmartSchedulingModal from '../components/TaskScheduler/SmartSchedulingModal';
 import { Modal, message } from 'antd';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'; 
+import { Switch, FormControlLabel } from '@mui/material';
+import { DragDropContext } from 'react-beautiful-dnd'; 
+import mockSuggestions from '../data/mockData';
 import Confetti from 'react-confetti';
-import '../styles/Dashboard.css';
+import '../styles/MainDashboard/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+/**
+ * Dashboard component displays the four todo lists that will hold the users tasks
+ * This page is the primary players where users will engage with the product
+ * Users can add tasks, subtasks, and subtasks, and move top-level tasks between lists
+ * Additional features include auto-scheduling tasks and drag-to-complete
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <Dashboard />
+ * 
+ * @returns {JSX.Element} A dashboard of hierarchical todo lists 
+ */
 const Dashboard = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSchedulerModalVisible, setIsSchedulerModalVisible] = useState(false);
   const [formType, setFormType] = useState('task');
-  const [completedTasks, setCompletedTasks] = useState([]);
+  const [smartSchedulingEnabled, setSmartSchedulingEnabled] = useState(true);
+  const [timeSuggestions, setTimeSuggestions] = useState(null);
+  const [smartSchedulingTask, setSmartSchedulingTask] = useState(null);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false)
@@ -21,13 +42,11 @@ const Dashboard = () => {
     nutrition: [],
     recovery: []
   });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_BASE_URL = 'http://127.0.0.1:5000';
 
+  // fetches all of the user's tasks from the database by calling the tasksApi
   const fetchTasks = async () => {
     try {
-      setLoading(true);
       const data = await tasksApi.fetchTasks();
 
       const categorizedTasks = {
@@ -40,8 +59,6 @@ const Dashboard = () => {
     } catch (error) {
       setError('Error fetching tasks');
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -49,12 +66,12 @@ const Dashboard = () => {
     fetchTasks();
   }, []);
   
+  // Add a new task to the database by calling the tasksApi
   const handleAddTask = async (newTask) => {
     try {
       const data = await tasksApi.AddTask(newTask);
       const category = data.category
       setTasks((prevTasks) => {
-        console.log("Previous tasks:", prevTasks);
         if (prevTasks[category]) {
           return {
             ...prevTasks,
@@ -65,16 +82,26 @@ const Dashboard = () => {
           return prevTasks;
         }
       });
-      await fetchTasks();
-      message.success('Task added successfully');
+      await fetchTasks(); // Fetch the tasks again from the db so the updates task lists render
       setIsModalVisible(false);
+      message.success('Task added successfully');
+
+      // If the user enabled smart scheduling, fetch their calendar suggestions 
+      if (smartSchedulingEnabled) {
+        setSmartSchedulingTask(newTask);
+        setTimeout(() => handleGetTaskSuggestions(), 3000); // Mock a 3-second delay instead of calling the OpenAI API (change in production)
+      };
+
     } catch (error) {
       setError(`Error adding new task: ${error.message}`);
     }
   };
   
+  // Delete a task, subtask or subsubtask from the database by calling the tasksApi
   const handleDeleteTask = async (taskId, category, taskType = 'task') => {
     try {
+
+      // Use the hierarchy level of the task to call the appropriate method in the API
       if (taskType === 'task') {
         await tasksApi.DeleteTask(taskId);
       } else if (taskType === 'subtask') {
@@ -83,6 +110,7 @@ const Dashboard = () => {
         await tasksApi.DeleteSubSubtask(taskId);
       }
   
+      // Update the new tasks list, removing the task of interest
       setTasks((prevTasks) => {
         if (taskType === 'subtask') {
           const updatedTasks = prevTasks[category]?.map((task) =>
@@ -105,13 +133,14 @@ const Dashboard = () => {
         }
       });
       
-      await fetchTasks();
+      await fetchTasks(); // fetch tasks again so the updated lists render
       message.success(taskType === 'subtask' ? 'Subtask deleted' : 'Task deleted');
     } catch (error) {
       message.error(`Error deleting ${taskType === 'subtask' ? 'subtask' : 'task'}: ${error.message}`);
     }
   };
 
+  // Add a new subtask to the database by calling the tasksApi
   const handleAddSubtask = async (taskId, newSubtask) => {
     try {
       const data = await tasksApi.AddSubtask(taskId, newSubtask);
@@ -127,14 +156,22 @@ const Dashboard = () => {
         });
         return updatedTasks;
       });
-      await fetchTasks();
-      message.success('Subtasks added successfully');
+      await fetchTasks(); // fetch tasks again so the updated todo lists are rendered
       setIsModalVisible(false);
+      message.success('Subtasks added successfully');
+
+      // If the user enables smart suggestions, fetch the calendar suggestions for the subtask
+      if (smartSchedulingEnabled) {
+        setSmartSchedulingTask(newSubtask);
+        setTimeout(() => handleGetTaskSuggestions(), 3000);
+      };
+
     } catch (error) {
       message.error(`Error adding subtask: ${error.message}`);
     }
   };
 
+  // Add a new sub-subtask to the database by calling the tasksApi
   const handleAddSubSubtask = async (subtaskId, newSubSubtask) => {
     try {
       const data = await tasksApi.AddSubSubtask(subtaskId, newSubSubtask);
@@ -161,17 +198,27 @@ const Dashboard = () => {
   
         return updatedTasks;
       });
-      await fetchTasks();
-      message.success('Sub-Subtasks added successfully');
+      await fetchTasks(); // fetch tasks again so the updated todo lists are rendered
       setIsModalVisible(false);
+      message.success('Sub-Subtasks added successfully');
+      
+      // If the user enables smart suggestions, fetch the calendar suggestions for the sub-subtask
+      if (smartSchedulingEnabled) {
+        setSmartSchedulingTask(newSubSubtask);
+        setTimeout(() => handleGetTaskSuggestions(), 3000);
+      };
+
     } catch (error) {
       console.error('Error adding sub-subtask:', error);
       message.error(`Error adding sub-subtask: ${error.message}`);
     }
   };
 
+  // when a task is dropped in the completion zone, remove it from its list and add it to completed tasks by calling the tasksApi
   const handleCompleteTask = async (itemId, itemType, category) => {
     try {
+
+      // Use the task hierarchy to determine which method in the API to call
       if (itemType === 'task') {
         await tasksApi.CompleteTask(itemId);
         setTasks(prevTasks => ({
@@ -183,15 +230,17 @@ const Dashboard = () => {
       } else if (itemType === 'subsubtask') {
         await tasksApi.CompleteSubSubtask(itemId);
       }
+
       message.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} completed successfully! 🎉`);
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 6000);
-      await fetchTasks();
+      setShowConfetti(true); // Upon success, trigger confetti falling from top of screem 
+      setTimeout(() => setShowConfetti(false), 6000); // Let the confetti fall for 6 seconds
+      await fetchTasks(); // Fetch the tasks again to render the updated todolists
     } catch (error) {
       message.error(`Error completing ${itemType}: ${error.message}`);
     }
   };
 
+  // Open the appropriate modal (add task, add subtask, add subsubtask) containing the respective form
   const showModal = (modalType = 'task', task = null, subtask = null) => {
     setFormType(modalType);
     setSelectedTask(task)
@@ -201,24 +250,30 @@ const Dashboard = () => {
     setIsModalVisible(true);
   };
 
+  // When the user clicks the 'x' in the top-right of the modal, close the modal
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsSchedulerModalVisible(false);
     setFormType('task')
   };
 
+  // Ensure the necessary changes occur when a task is correctly dropped into one of the lists or the completion zone
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
+
+    // Ensure the task was dropped onto a valid destination (todolist or completion zone)
     if (!destination) return;
   
+
+    // Process tasks that were dropped into the completion zone in a particular way
     const [itemType, itemId] = draggableId.split('-');
     const isCompletedDropzone = destination.droppableId === 'completed';
-  
     if (isCompletedDropzone) {
-      console.log("HANDLE COMPLETE TASK")
       handleCompleteTask(parseInt(itemId, 10), itemType, source.droppableId);
       return;
     }
   
+    // Process top-level tasks that were taken from one list to a different list in a particular way 
     if (itemType === 'task' && source.droppableId !== destination.droppableId) {
       const sourceCategoryTasks = tasks[source.droppableId];
       const destinationCategoryTasks = tasks[destination.droppableId];
@@ -233,60 +288,162 @@ const Dashboard = () => {
       const newSourceTasks = sourceCategoryTasks.filter((task) => task.id.toString() !== itemId);
       const newDestinationTasks = [...destinationCategoryTasks, draggedTask];
   
+      // Update the new tasks object, with this task in the array of a different category/key
       setTasks((prevTasks) => ({
         ...prevTasks,
         [source.droppableId]: newSourceTasks,
         [destination.droppableId]: newDestinationTasks,
       }));
-  
-      fetch(`${API_BASE_URL}/api/tasks/${draggedTask.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ category: destination.droppableId }),
-      }).catch((error) => message.error('Error moving task'));
+      
+      // Update the task's category in the database
+      tasksApi.updateTaskCategory(draggedTask.id, destination.droppableId).catch((error) =>
+        message.error('Error moving task')
+      );
     }
   };
 
+  const handleSchedulerToggle = () => {
+    setSmartSchedulingEnabled(!smartSchedulingEnabled)
+  }
+
+  // Call the taskSchedulerApi which interfaces with Google Calendar and OpenAI.
+  // Commented out to save money. Uncomment in production. 
+  // 
+  // const handleGetTaskSuggestions = async () => {
+  //   try {
+  //     const suggestions = await taskSchedulerApi.getTimeSuggestions(mockTaskData);
+  //     setTimeSuggestions(suggestions);
+  //     setIsSchedulerModalVisible(true);
+  //   } catch (error) {
+  //     message.error("Failed to fetch time suggestions");
+  //   }
+  // };
+
+  // Use the mock data to simulate fetching smart calendar suggestions and displaying them to the user on a modal
+  const handleGetTaskSuggestions = () => {
+    setTimeSuggestions(mockSuggestions);
+    setIsSchedulerModalVisible(true);
+  };
+
+  // When a user accepts a calendar suggestion, call the GCalendar API to create an event
+  const handleAcceptSuggestion = async (suggestion) => {
+  
+    // Prepare the event data to send to the backend
+    const scheduleData = {
+      summary: suggestion.event_data.summary,
+      description: "Scheduled from Smart Suggestions",
+      startDateTime: suggestion.event_data.start_date,
+      endDateTime: suggestion.event_data.end_date,
+    };
+  
+    try {
+      const response = await taskSchedulerApi.confirmTaskSchedule(scheduleData);
+      if (response.status === 'Event created') {
+        message.success("Event added to Google Calendar!");
+      } else {
+        message.error("Failed to add event to Google Calendar.");
+      }
+    } catch (error) {
+      console.error("Error adding event to Google Calendar:", error);
+      message.error("Error adding event to Google Calendar.");
+    } finally {
+      setIsSchedulerModalVisible(false);
+    }
+  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="dashboard">
         <div className="animated-background"></div>
         {showConfetti && <Confetti />}
+        <div className="smart-scheduler-container">
+
+        {/* Switch component that allows users to toggle between smart scheduling mode and regular mode */}
+        <FormControlLabel
+          control={
+            <Switch
+              checked={smartSchedulingEnabled}
+              onChange={handleSchedulerToggle}
+              sx={{
+                width: 90,
+                height: 40,
+                '.MuiSwitch-thumb': {
+                  width: 24,
+                  height: 24,
+                  color: '#1E3E62',
+                  transition: 'transform 0.3s ease', 
+                  transform: smartSchedulingEnabled ? 'translateX(34px)' : 'translateX(0px)',
+                },
+                '.MuiSwitch-track': {
+                  borderRadius: 20,
+                  backgroundColor: smartSchedulingEnabled ? '#FF6500' : '#DFF2EB',
+                  opacity: 1,
+                },
+              }}
+              inputProps={{ 'aria-label': 'Smart Scheduler Switch' }}
+            />
+          }
+          label="Smart Task Scheduling"
+          labelPlacement="end"
+          sx={{
+            fontSize: '1.2rem',
+            color: '#1E3E62',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        />
+        </div>
         <div className="lists-container">
-          <TodoList title="Running" tasks={tasks.running || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Gym" tasks={tasks.gym || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Nutrition" tasks={tasks.nutrition || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
-          <TodoList title="Recovery" tasks={tasks.recovery || []} onDelete={handleDeleteTask} onAddSubtask={(task) => showModal('subtask', task)} onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} refreshTasks={fetchTasks} />
-          <Droppable droppableId="completed">
-            {(provided, snapshot) => (
-              <div
-                className="completed-dropzone"
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                style={{
-                  backgroundColor: snapshot.isDraggingOver ? '#93b0a5' : 'white',
-                  transition: 'background-color 1s ease',
-                }}
-              >
-                <h3 className="todo-list-title patrick-hand-regular">Completed</h3>
-                <p>Drag here to complete tasks</p>
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+          
+          {/* Render the four todo lists that the user can add, remove, and edit tasks with */}
+          <TodoList 
+            title="Running" 
+            tasks={tasks.running || []} 
+            onDelete={handleDeleteTask} 
+            onAddSubtask={(task) => 
+            showModal('subtask', task)}
+            onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} 
+            refreshTasks={fetchTasks} 
+          />
+          <TodoList 
+            title="Gym" 
+            tasks={tasks.gym || []} 
+            onDelete={handleDeleteTask} 
+            onAddSubtask={(task) => showModal('subtask', task)} 
+            onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} 
+            refreshTasks={fetchTasks} 
+          />
+          <TodoList 
+            title="Nutrition" 
+            tasks={tasks.nutrition || []} 
+            onDelete={handleDeleteTask} 
+            onAddSubtask={(task) => showModal('subtask', task)} 
+            onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} 
+            refreshTasks={fetchTasks} 
+          />
+          <TodoList 
+            title="Recovery" 
+            tasks={tasks.recovery || []} 
+            onDelete={handleDeleteTask} 
+            onAddSubtask={(task) => showModal('subtask', task)} 
+            onAddSubSubtask={(subtask) => showModal('subsubtask', null, subtask)} 
+            refreshTasks={fetchTasks} 
+          />
+          
+          {/* Completed Dropzone, adjacent to the Todo lists*/}
+          <CompletedDropzone />
         </div>
 
         {error && <div className="error-message">{error}</div>}
-
+        
+        {/* Button that, when clicked, opens the Add Task Form modal */}
         <div className="add-task-button-wrapper">
           <button className="add-task-button" onClick={() => showModal('task')}>
             Add Task
           </button>
         </div>
-
+        
+        {/* Modal that renders forms for Adding a task, subtask or subsubtask respectively */}
         <Modal
           visible={isModalVisible}
           onCancel={handleCancel}
@@ -312,6 +469,15 @@ const Dashboard = () => {
             />
           ) : null}
         </Modal>
+
+        {/* Modal that opens automatically after adding a task/subtask/subsubtask when user is on smart-scheduling mode */}
+        <SmartSchedulingModal
+          isVisible={isSchedulerModalVisible}
+          suggestions={timeSuggestions}
+          onAccept={handleAcceptSuggestion} 
+          onClose={() => setIsSchedulerModalVisible(false)}
+          taskDescription={smartSchedulingTask ? smartSchedulingTask.description : ''}
+        />
       </div>
     </DragDropContext>
   );

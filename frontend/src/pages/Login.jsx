@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import ParticlesBackground from '../components/General/ParticlesBackground';
-import { loginUser } from '../api/authApi';
-import '../styles/Login.css';
+import { message } from 'antd';
+import authApi from '../api/authApi';
+import '../styles/Auth/Login.css';
 
+/**
+ * Login component provides a user login form with email and password fields.
+ * On submission, it authenticates the user using the `loginUser` API function.
+ * Displays success or error messages based on the login attempt.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <Login />
+ * 
+ * @returns {JSX.Element} A login form component.
+ */
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,22 +28,17 @@ function Login() {
     };
     
     try {
-      const response = await loginUser(userData);
-      setSuccess(response.message);
-      setError('');
+      await authApi.LoginUser(userData);
+      message.success('Successfully logged in')
     } catch (err) {
-      setError(err.message);
-      setSuccess(''); 
+      message.success('Failed to logged in')
     }
   };
 
   return (
     <div className="login-container">
       <div className="animated-background"></div>
-      <ParticlesBackground />
       <h2>Login</h2>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input

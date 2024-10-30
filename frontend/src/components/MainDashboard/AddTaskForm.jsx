@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../styles/AddTaskForm.css';
+import '../../styles/MainDashboard/AddTaskForm.css';
 
 const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
   const [taskName, setTaskName] = useState('');

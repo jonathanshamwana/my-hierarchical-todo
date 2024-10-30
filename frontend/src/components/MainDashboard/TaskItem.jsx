@@ -4,7 +4,7 @@ import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Subtask from './Subtask';
 import tasksApi from '../../api/tasksApi';
-import '../../styles/TaskItem.css';
+import '../../styles/MainDashboard/TaskItem.css';
 
 const TaskItem = ({ task, index, onDelete, onAddSubtask, onAddSubSubtask, category, refreshTasks }) => {
   const [showSubtasks, setShowSubtasks] = useState(false);

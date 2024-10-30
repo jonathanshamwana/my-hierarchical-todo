@@ -1,6 +1,14 @@
 import React from 'react';
-import '../../styles/Footer.css';
+import '../../styles/General/Footer.css';
 
+/**
+ * Footer component - Displays the footer content with copyright information.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <Footer />
+ */
 function Footer() {
   return (
     <footer className="app-footer">

@@ -2,7 +2,6 @@ const API_BASE_URL = 'http://127.0.0.1:5000';
 
 const fetchTasks = async () => {
   const token = sessionStorage.getItem('token'); 
-  console.log('Token:', token);
   
   return fetch(`${API_BASE_URL}/api/tasks/`, {
       method: 'GET',
@@ -21,9 +20,6 @@ const fetchTasks = async () => {
 
 const AddTask = async (newTask) => {
   const token = sessionStorage.getItem('token'); 
-  console.log('Token:', token);
-  console.log('New Task Data:', newTask);
-  console.log(`${API_BASE_URL}/api/tasks/`)
 
   return fetch(`${API_BASE_URL}/api/tasks/`, {
     method: 'POST',
@@ -222,4 +218,30 @@ const GetCompletedTasks = async () => {
   });
 };
 
-export default { fetchTasks, AddTask, AddSubtask, AddSubSubtask, DeleteTask, DeleteSubtask, DeleteSubSubtask, CompleteTask, CompleteSubtask, CompleteSubSubtask, GetCompletedTasks, UpdateItem };
+const updateTaskCategory = async (taskId, newCategory) => {
+  const token = sessionStorage.getItem('token');
+  return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ category: newCategory }),
+  });
+};
+
+export default { 
+  AddSubSubtask, 
+  AddSubtask, 
+  AddTask, 
+  CompleteSubSubtask, 
+  CompleteSubtask, 
+  CompleteTask, 
+  DeleteSubSubtask, 
+  DeleteSubtask, 
+  DeleteTask, 
+  fetchTasks, 
+  GetCompletedTasks, 
+  UpdateItem, 
+  updateTaskCategory 
+};

@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-export const signupUser = async (userData) => {
+const SignupUser = async (userData) => {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
@@ -23,7 +23,7 @@ export const signupUser = async (userData) => {
   }
 };
 
-export const loginUser = async (credentials) => {
+const LoginUser = async (credentials) => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {
@@ -42,3 +42,5 @@ export const loginUser = async (credentials) => {
 
   return data;
 };
+
+export default { LoginUser, SignupUser }

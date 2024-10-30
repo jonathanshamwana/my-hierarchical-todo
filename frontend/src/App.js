@@ -7,7 +7,6 @@ import Home from './pages/Home';
 import Login from './pages/Login';  
 import Signup from './pages/Signup';  
 import CompletedTasks from './pages/CompletedTasks';
-import IntegrationsDashboard from './pages/IntegrationsDashboard';
 import ProtectedRoute from './components/General/ProtectedRoute';
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
               <Route path="/login" element={<Login />} /> 
               <Route path="/signup" element={<Signup />} /> 
               <Route path="/completed" element={<ProtectedRoute element={CompletedTasks} />} />
-              <Route path="/integrations" element={<ProtectedRoute element={IntegrationsDashboard} />} />
             </Routes>
         </main>
         <Footer />
