@@ -45,8 +45,10 @@ def login():
     Log in an existing user.
     """
     data = request.get_json()
+    print(data)
 
     user = User.query.filter_by(email=data['email']).first()
+    print("USER:", user)
 
     if not user or not check_password_hash(user.password_hash, data['password']): 
         return jsonify({'message': 'Invalid email or password'}), 401
