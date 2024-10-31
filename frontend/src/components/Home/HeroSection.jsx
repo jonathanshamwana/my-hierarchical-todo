@@ -21,3 +21,4 @@ const HeroSection = ({ heading, subheading, image, ctaText, ctaLink }) => (
 );
 
 export default HeroSection;
+

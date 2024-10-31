@@ -35,3 +35,4 @@ const CompletedDropzone = () => {
 };
 
 export default CompletedDropzone;
+

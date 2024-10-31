@@ -1,103 +1,90 @@
 import React, { useState } from 'react';
 import '../../styles/MainDashboard/AddTaskForm.css';
 
+/**
+ * AddTaskForm component - Renders a form for adding tasks, subtasks, and sub-subtasks.
+ * @param {array} categories - Task categories (e.g., 'Running', 'Nutrition').
+ * @param {function} onAddTask - Handler function for adding tasks.
+ * @param {string} formType - Specifies the form type: 'task', 'subtask', or 'subsubtask'.
+ *
+ * @returns {JSX.Element} A form with fields relevant to the form type for task addition.
+ */
 const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
   const [taskName, setTaskName] = useState('');
   const [subtasks, setSubtasks] = useState([{ id: 1, name: '' }]);
   const [subSubtasks, setSubSubtasks] = useState([{ id: 1, name: '' }]);
   const [selectedCategory, setSelectedCategory] = useState('');
 
+  // Updates the state of subtasks when a subtask field changes
   const handleSubtaskChange = (index, value) => {
     const newSubtasks = [...subtasks];
     newSubtasks[index].name = value;
     setSubtasks(newSubtasks);
   };
 
+  // Updates the state of sub-subtasks when a sub-subtask field changes
   const handleSubSubtaskChange = (index, value) => {
     const newSubSubtasks = [...subSubtasks];
     newSubSubtasks[index].name = value;
     setSubSubtasks(newSubSubtasks);
   };
 
+  // Adds a new empty subtask to the form
   const handleAddSubtask = () => {
     setSubtasks([...subtasks, { id: subtasks.length + 1, name: '' }]);
   };
 
+  // Adds a new empty sub-subtask to the form
   const handleAddSubSubtask = () => {
     setSubSubtasks([...subSubtasks, { id: subSubtasks.length + 1, name: '' }]);
   };
 
+  // Removes a specified subtask by index
   const handleRemoveSubtask = (index) => {
-    const newSubtasks = subtasks.filter((_, i) => i !== index);
-    setSubtasks(newSubtasks);
+    setSubtasks(subtasks.filter((_, i) => i !== index));
   };
 
+  // Removes a specified sub-subtask by index
   const handleRemoveSubSubtask = (index) => {
-    const newSubSubtasks = subSubtasks.filter((_, i) => i !== index);
-    setSubSubtasks(newSubSubtasks);
+    setSubSubtasks(subSubtasks.filter((_, i) => i !== index));
   };
 
+  // Handles form submission based on form type and resets form fields
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (formType === 'subtask' && subtasks.length > 0) {
       subtasks.forEach((subtask) => {
-        const newSubtask = {
-          description: subtask.name,
-          subtasks: []
-        };
-        onAddTask(newSubtask)
-      })
-    }
-    else if (formType === 'subsubtask' && subSubtasks.length > 0) {
-      // Create a task object for each of the subtasks the user inputrted
+        onAddTask({ description: subtask.name, subtasks: [] });
+      });
+    } else if (formType === 'subsubtask' && subSubtasks.length > 0) {
       subSubtasks.forEach((subSubtask) => {
-        const newSubSubtask = {
-          description: subSubtask.name,
-          subtasks: [],
-          subSubtasks: [],
-        };
-        // Add the subtask to the database
-        onAddTask(newSubSubtask);
-      })
-
-      // Reset the subtasks array to be used in a future form
+        onAddTask({ description: subSubtask.name, subtasks: [], subSubtasks: [] });
+      });
       setSubSubtasks([{ id: 1, name: '' }]);
-    } else if (taskName.trim() !== '' && (formType !== 'task' || selectedCategory !== '')) {
-      
-      // Create an object for the new task and its details 
-      const newTask = {
+    } else if (taskName.trim() && (formType !== 'task' || selectedCategory)) {
+      onAddTask({
         description: taskName,
         subtasks,
         subSubtasks: [],
         category: selectedCategory,
-      };
-
-      // Add the task object (which optionally contains its subtasks)
-      onAddTask(newTask);
-
-      // Reset form fields for tasks
+      });
       setTaskName('');
       setSubtasks([{ id: 1, name: '' }]);
       setSelectedCategory('');
     } else {
-      console.log("Form data invalid.")
+      console.log("Form data invalid.");
     }
-
   };
-  
 
   return (
     <div className="add-task-form">
       <h2>
-        {formType === 'task'
-          ? 'Add New Task'
-          : formType === 'subtask'
-          ? 'Add New Subtask'
-          : 'Add New Sub-Subtask'}
+        {formType === 'task' ? 'Add New Task' : formType === 'subtask' ? 'Add New Subtask' : 'Add New Sub-Subtask'}
       </h2>
       <form onSubmit={handleSubmit}>
-        {/* Show task name input only for the task form */}
+        
+        {/* Main task name and category selection for 'task' form type */}
         {formType === 'task' && (
           <div>
             <input
@@ -143,7 +130,7 @@ const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
           </div>
         )}
 
-        {/* Show subtasks for 'subtask' form type */}
+        {/* Subtasks form for 'subtask' type */}
         {formType === 'subtask' && (
           <div>
             {subtasks.map((subtask, index) => (
@@ -169,7 +156,7 @@ const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
           </div>
         )}
 
-        {/* Show sub-subtasks for 'subsubtask' form type */}
+        {/* Sub-subtasks form for 'subsubtask' type */}
         {formType === 'subsubtask' && (
           <div>
             {subSubtasks.map((subSubtask, index) => (
@@ -204,4 +191,6 @@ const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
 };
 
 export default AddTaskForm;
+
+
 
