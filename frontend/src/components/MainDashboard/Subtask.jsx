@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input, Popconfirm, message } from 'antd';
 import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import SubSubtask from './SubSubTask';
+import SubSubtask from './SubSubtask';
 import tasksApi from '../../api/tasksApi';
 
 /**

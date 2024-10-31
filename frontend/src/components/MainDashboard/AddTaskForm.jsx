@@ -63,6 +63,7 @@ const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
       });
       setSubSubtasks([{ id: 1, name: '' }]);
     } else if (taskName.trim() && (formType !== 'task' || selectedCategory)) {
+      console.log("SELECTED CATEGORY:", selectedCategory)
       onAddTask({
         description: taskName,
         subtasks,

@@ -445,7 +445,7 @@ const Dashboard = () => {
         
         {/* Modal that renders forms for Adding a task, subtask or subsubtask respectively */}
         <Modal
-          visible={isModalVisible}
+          open={isModalVisible}
           onCancel={handleCancel}
           footer={null}
         >
@@ -472,7 +472,7 @@ const Dashboard = () => {
 
         {/* Modal that opens automatically after adding a task/subtask/subsubtask when user is on smart-scheduling mode */}
         <SmartSchedulingModal
-          isVisible={isSchedulerModalVisible}
+          open={isSchedulerModalVisible}
           suggestions={timeSuggestions}
           onAccept={handleAcceptSuggestion} 
           onClose={() => setIsSchedulerModalVisible(false)}

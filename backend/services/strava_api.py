@@ -10,11 +10,13 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
 
+# Strava API credentials
 client_id = os.getenv('STRAVA_CLIENT_ID')
 client_secret = os.getenv('STRAVA_CLIENT_SECRET')
 refresh_token = os.getenv('STRAVA_REFRESH_TOKEN')
 
 def refresh_strava_token():
+    """Refreshes the Strava access token using the refresh token."""
     response = requests.post(
         url="https://www.strava.com/oauth/token",
         data={
@@ -25,6 +27,7 @@ def refresh_strava_token():
         }
     )
     if response.status_code == 200:
+        # Save new tokens from the response
         new_token = response.json()
         os.environ['STRAVA_ACCESS_TOKEN'] = new_token['access_token']
         os.environ['STRAVA_REFRESH_TOKEN'] = new_token['refresh_token']
@@ -35,6 +38,7 @@ def refresh_strava_token():
 
 @app.route('/api/strava/profile', methods=['GET'])
 def get_strava_profile():
+    """Fetches the Strava profile of the authenticated user."""
     access_token = refresh_strava_token()
     if access_token:
         response = requests.get(
@@ -50,6 +54,7 @@ def get_strava_profile():
 
 @app.route('/api/strava/activities', methods=['GET'])
 def get_strava_activities():
+    """Fetches recent Strava activities for the authenticated user."""
     access_token = refresh_strava_token()
     if access_token:
         response = requests.get(
@@ -65,6 +70,7 @@ def get_strava_activities():
 
 @app.route('/api/strava/run_totals', methods=['GET'])
 def get_ytd_run_totals():
+    """Fetches year-to-date running totals for the authenticated user."""
     access_token = refresh_strava_token()
     if access_token:
         url = f"https://www.strava.com/api/v3/athletes/{client_id}/stats"
@@ -82,5 +88,3 @@ def get_ytd_run_totals():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
-
-

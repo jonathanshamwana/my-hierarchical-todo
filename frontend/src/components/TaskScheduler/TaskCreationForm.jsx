@@ -89,7 +89,7 @@ const EventCreationForm = ({ onCreateTask }) => {
 
       {/* Modal displaying scheduling suggestions if smart scheduling is enabled */}
       <SmartSchedulingModal
-        isVisible={isModalVisible}
+        open={isModalVisible}
         suggestions={suggestions}
         onAccept={handleAcceptSuggestion}
         onClose={() => setIsModalVisible(false)}

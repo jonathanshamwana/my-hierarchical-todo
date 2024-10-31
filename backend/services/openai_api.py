@@ -15,7 +15,6 @@ def suggest_time_slots(data):
     Fetches optimal time slots based on user's calendar events and task details.
     """
     event_data = data['events']  # default to empty list if not provided
-    # task_description = request.json.get('description', "No description provided") 
     task_duration = data['duration']  # default duration if none provided
     task_description = data['task_description']
 

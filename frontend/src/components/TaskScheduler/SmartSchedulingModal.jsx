@@ -15,7 +15,7 @@ import '../../styles/SmartScheduling/SmartSchedulingModal.css';
  * @component
  * @example
  * <SmartSchedulingModal 
- *   isVisible={true}
+ *   open={true}
  *   suggestions={suggestionsList}
  *   onAccept={handleAccept}
  *   onClose={handleClose}
@@ -28,7 +28,7 @@ const SmartSchedulingModal = ({ isVisible, suggestions, onAccept, onClose, taskD
   return (
     <Modal
       title="Smart Scheduling Suggestions"
-      visible={isVisible}
+      open={isVisible}
       onCancel={onClose}
       footer={null}
       className="modal-container"
