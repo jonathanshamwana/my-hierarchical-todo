@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { message } from 'antd';
 import authApi from '../api/authApi';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import {AuthContext} from '../context/AuthContext';
 import '../styles/Auth/Signup.css';
 
 /**
@@ -18,6 +19,7 @@ import '../styles/Auth/Signup.css';
  * @returns {JSX.Element} A signup form component.
  */
 function Signup() {
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -34,7 +36,7 @@ function Signup() {
 
     try {
       const response = await authApi.SignupUser(userData);
-      sessionStorage.setItem('token', response.token);
+      login(response.token);
 
       message.success("Account created")
       navigate('/dashboard')

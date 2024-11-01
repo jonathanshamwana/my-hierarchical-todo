@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import '../../styles/General/Header.css';
 
 /**
  * Header component - Renders the navigation menu based on the user's authentication status.
- * Shows dashboard, completed tasks, and logout options if the user is logged in, otherwise shows home, login, and signup.
+ * If the user is authenticated, it shows links to the dashboard, completed tasks, and a logout option.
+ * If the user is not authenticated, it shows links to the home, login, and signup pages.
+ * The logout link triggers a logout function and redirects the user to the login page.
  * 
  * @component
  * @example
  * // Usage
  * <Header />
+ * 
+ * @returns {JSX.Element} The Header component with conditional navigation links.
  */
 function Header() {
-  const token = sessionStorage.getItem('token'); // Retrieve authentication token from session storage
+  const { isAuthenticated, logout } = useContext(AuthContext); // Access auth state and logout function
 
   return (
     <header className="app-header">
       <nav>
         <ul className="nav-links">
-          {token ? (
+          {isAuthenticated ? (
             <>
               <li><a href="/dashboard">Dashboard</a></li>
               <li><a href="/completed">Completed Tasks</a></li>
-              <li><a href="/" onClick={() => {
-                sessionStorage.removeItem('token'); // Clear token on logout
+              <li><a href="/" onClick={(e) => {
+                e.preventDefault();
+                logout(); // Trigger logout function
                 window.location.href = '/login'; // Redirect to login
               }}>Logout</a></li>
             </>
