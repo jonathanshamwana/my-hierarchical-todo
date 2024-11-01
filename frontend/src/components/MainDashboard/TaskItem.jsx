@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Popconfirm, Input, message } from 'antd';
 import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Subtask from './Subtask';
 import tasksApi from '../../api/tasksApi';
+import { AuthContext } from '../../context/AuthContext';
 import '../../styles/MainDashboard/TaskItem.css';
 
 /**
@@ -32,9 +33,10 @@ import '../../styles/MainDashboard/TaskItem.css';
  * />
  */
 const TaskItem = ({ task, index, onDelete, onAddSubtask, onAddSubSubtask, category, refreshTasks }) => {
-  const [showSubtasks, setShowSubtasks] = useState(false); // Controls visibility of nested subtasks
-  const [isEditing, setIsEditing] = useState(null); // Tracks the item being edited
-  const [editValue, setEditValue] = useState(''); // Stores the current edit input
+  const [showSubtasks, setShowSubtasks] = useState(false); 
+  const [isEditing, setIsEditing] = useState(null); 
+  const [editValue, setEditValue] = useState(''); 
+  const { token } = useContext(AuthContext);
 
   // Toggles the visibility of subtasks within this task
   const handleToggleSubtasks = () => setShowSubtasks(!showSubtasks);
@@ -48,9 +50,9 @@ const TaskItem = ({ task, index, onDelete, onAddSubtask, onAddSubSubtask, catego
   // Saves edits to the task or subtask description
   const saveEdit = async () => {
     try {
-      await tasksApi.UpdateItem(isEditing.id, isEditing.type, editValue);
-      setIsEditing(null); // Exit edit mode
-      await refreshTasks(); // Refresh to show updated data
+      await tasksApi.UpdateItem(isEditing.id, isEditing.type, editValue, token);
+      setIsEditing(null); 
+      await refreshTasks();
       message.success("Task updated successfully");
     } catch (e) {
       console.error("Failed to update task");

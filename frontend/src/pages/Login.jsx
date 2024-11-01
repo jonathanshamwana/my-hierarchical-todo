@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { message } from 'antd';
 import authApi from '../api/authApi';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/Auth/Login.css';
 
 /**
@@ -18,6 +19,7 @@ import '../styles/Auth/Login.css';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ function Login() {
     };
     
     try {
-      await authApi.LoginUser(userData);
+      await authApi.LoginUser(userData, login);
       message.success('Successfully logged in')
     } catch (err) {
       message.success('Failed to logged in')

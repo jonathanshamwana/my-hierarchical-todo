@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import TodoList from '../components/MainDashboard/TodoList';
 import CompletedDropzone from '../components/MainDashboard/CompletionDropzone';
 import AddTaskForm from '../components/MainDashboard/AddTaskForm';
 import tasksApi from '../api/tasksApi';
+import { AuthContext } from '../context/AuthContext';
 import taskSchedulerApi from '../api/taskSchedulerApi';
 import SmartSchedulingModal from '../components/TaskScheduler/SmartSchedulingModal';
 import { Modal, message } from 'antd';
@@ -43,19 +44,21 @@ const Dashboard = () => {
     recovery: []
   });
   const [error, setError] = useState(null);
+  const { token } = useContext(AuthContext);
 
   // fetches all of the user's tasks from the database by calling the tasksApi
   const fetchTasks = async () => {
     try {
-      const data = await tasksApi.fetchTasks();
-
-      const categorizedTasks = {
-        running: data.filter(task => task.category === 'Running'),
-        gym: data.filter(task => task.category === 'Gym'),
-        nutrition: data.filter(task => task.category === 'Nutrition'),
-        recovery: data.filter(task => task.category === 'Recovery'),
-      };
-      setTasks(categorizedTasks);
+      if (token) {
+        const data = await tasksApi.fetchTasks(token);
+        const categorizedTasks = {
+          running: data.filter(task => task.category === 'Running'),
+          gym: data.filter(task => task.category === 'Gym'),
+          nutrition: data.filter(task => task.category === 'Nutrition'),
+          recovery: data.filter(task => task.category === 'Recovery'),
+        };
+        setTasks(categorizedTasks);
+      }
     } catch (error) {
       setError('Error fetching tasks');
       console.error(error);
@@ -63,13 +66,15 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (token) {
+      fetchTasks();
+    }
+  }, [token]);
   
   // Add a new task to the database by calling the tasksApi
   const handleAddTask = async (newTask) => {
     try {
-      const data = await tasksApi.AddTask(newTask);
+      const data = await tasksApi.AddTask(newTask, token);
       const category = data.category
       setTasks((prevTasks) => {
         if (prevTasks[category]) {
@@ -103,11 +108,11 @@ const Dashboard = () => {
 
       // Use the hierarchy level of the task to call the appropriate method in the API
       if (taskType === 'task') {
-        await tasksApi.DeleteTask(taskId);
+        await tasksApi.DeleteTask(taskId, token);
       } else if (taskType === 'subtask') {
-        await tasksApi.DeleteSubtask(taskId);
+        await tasksApi.DeleteSubtask(taskId, token);
       } else if (taskType === 'subsubtask') {
-        await tasksApi.DeleteSubSubtask(taskId);
+        await tasksApi.DeleteSubSubtask(taskId, token);
       }
   
       // Update the new tasks list, removing the task of interest
@@ -143,7 +148,7 @@ const Dashboard = () => {
   // Add a new subtask to the database by calling the tasksApi
   const handleAddSubtask = async (taskId, newSubtask) => {
     try {
-      const data = await tasksApi.AddSubtask(taskId, newSubtask);
+      const data = await tasksApi.AddSubtask(taskId, newSubtask, token);
       setTasks((prevTasks) => {
         const updatedTasks = { ...prevTasks };
         Object.keys(updatedTasks).forEach((category) => {
@@ -174,7 +179,7 @@ const Dashboard = () => {
   // Add a new sub-subtask to the database by calling the tasksApi
   const handleAddSubSubtask = async (subtaskId, newSubSubtask) => {
     try {
-      const data = await tasksApi.AddSubSubtask(subtaskId, newSubSubtask);
+      const data = await tasksApi.AddSubSubtask(subtaskId, newSubSubtask, token);
       
       setTasks((prevTasks) => {
         const updatedTasks = { ...prevTasks };
@@ -220,21 +225,21 @@ const Dashboard = () => {
 
       // Use the task hierarchy to determine which method in the API to call
       if (itemType === 'task') {
-        await tasksApi.CompleteTask(itemId);
+        await tasksApi.CompleteTask(itemId, token);
         setTasks(prevTasks => ({
           ...prevTasks,
           [category]: prevTasks[category].filter(task => task.id !== itemId),
         }));
       } else if (itemType === 'subtask') {
-        await tasksApi.CompleteSubtask(itemId);
+        await tasksApi.CompleteSubtask(itemId, token);
       } else if (itemType === 'subsubtask') {
-        await tasksApi.CompleteSubSubtask(itemId);
+        await tasksApi.CompleteSubSubtask(itemId, token);
       }
 
       message.success(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} completed successfully! 🎉`);
-      setShowConfetti(true); // Upon success, trigger confetti falling from top of screem 
+      setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 6000); // Let the confetti fall for 6 seconds
-      await fetchTasks(); // Fetch the tasks again to render the updated todolists
+      await fetchTasks();
     } catch (error) {
       message.error(`Error completing ${itemType}: ${error.message}`);
     }
@@ -245,8 +250,6 @@ const Dashboard = () => {
     setFormType(modalType);
     setSelectedTask(task)
     setSelectedSubtask(subtask);
-    console.log(selectedSubtask)
-    console.log(subtask)
     setIsModalVisible(true);
   };
 
@@ -296,7 +299,7 @@ const Dashboard = () => {
       }));
       
       // Update the task's category in the database
-      tasksApi.updateTaskCategory(draggedTask.id, destination.droppableId).catch((error) =>
+      tasksApi.updateTaskCategory(draggedTask.id, destination.droppableId, token).catch((error) =>
         message.error('Error moving task')
       );
     }

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import tasksApi from '../api/tasksApi';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/CompletedTasks/CompletedTasks.css'; 
 
 /**
@@ -16,10 +17,11 @@ import '../styles/CompletedTasks/CompletedTasks.css';
 const CompletedTasks = () => {
     const [completedTasks, setCompletedTasks] = useState([]);
     const [groupByDate, setGroupByDate] = useState(false);
+    const { token } = useContext(AuthContext);
 
     // Fetches completed tasks from the API and stores them by date 
     useEffect(() => {
-      tasksApi.GetCompletedTasks()
+      tasksApi.GetCompletedTasks(token)
         .then((data) => {
           const sortedData = data.sort(
             (a, b) => new Date(b.completion_date) - new Date(a.completion_date)

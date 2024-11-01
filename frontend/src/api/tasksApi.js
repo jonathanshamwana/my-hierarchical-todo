@@ -1,8 +1,15 @@
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-const fetchTasks = async () => {
-  const token = sessionStorage.getItem('token'); 
-  
+/**
+ * Fetches all tasks for the authenticated user.
+ * @async
+ * @function
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves to the fetched tasks.
+ * @throws {Error} If the request fails.
+ */
+const fetchTasks = async (token) => {
+  console.log("TOKEN", token)
   return fetch(`${API_BASE_URL}/api/tasks/`, {
       method: 'GET',
       headers: {
@@ -18,9 +25,16 @@ const fetchTasks = async () => {
   });
 };
 
-const AddTask = async (newTask) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Adds a new task for the authenticated user.
+ * @async
+ * @function
+ * @param {Object} newTask - The new task data.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves to the added task.
+ * @throws {Error} If the request fails.
+ */
+const AddTask = async (newTask, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/`, {
     method: 'POST',
     headers: {
@@ -36,9 +50,16 @@ const AddTask = async (newTask) => {
   });
 };
 
-const DeleteTask = async (taskId) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Deletes a task by its ID.
+ * @async
+ * @function
+ * @param {number} taskId - ID of the task to delete.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Response>} A promise that resolves if the task was deleted successfully.
+ * @throws {Error} If the request fails.
+ */
+const DeleteTask = async (taskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
     method: 'DELETE',
     headers: {
@@ -52,9 +73,17 @@ const DeleteTask = async (taskId) => {
   });
 };
 
-const AddSubtask = async (taskId, newSubtask) => {
-  const token = sessionStorage.getItem('token');
-
+/**
+ * Adds a subtask to a specified task.
+ * @async
+ * @function
+ * @param {number} taskId - ID of the task to add a subtask to.
+ * @param {Object} newSubtask - The new subtask data.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves to the added subtask.
+ * @throws {Error} If the request fails.
+ */
+const AddSubtask = async (taskId, newSubtask, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/${taskId}/subtasks`, {
     method: 'POST',
     headers: {
@@ -70,9 +99,16 @@ const AddSubtask = async (taskId, newSubtask) => {
   });
 }
 
-const DeleteSubtask = async (subtaskId) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Deletes a specified subtask by its ID.
+ * @async
+ * @function
+ * @param {number} subtaskId - ID of the subtask to delete.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Response>} A promise that resolves if the subtask was deleted successfully.
+ * @throws {Error} If the request fails.
+ */
+const DeleteSubtask = async (subtaskId, token) => {
   fetch(`${API_BASE_URL}/api/tasks/subtasks/${subtaskId}`, {
     method: 'DELETE',
     headers: {
@@ -87,9 +123,17 @@ const DeleteSubtask = async (subtaskId) => {
   });
 };
 
-const AddSubSubtask = async (subtaskId, newSubSubtask) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Adds a sub-subtask to a specified subtask.
+ * @async
+ * @function
+ * @param {number} subtaskId - ID of the subtask to add a sub-subtask to.
+ * @param {Object} newSubSubtask - The new sub-subtask data.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves to the added sub-subtask.
+ * @throws {Error} If the request fails.
+ */
+const AddSubSubtask = async (subtaskId, newSubSubtask, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/subtasks/${subtaskId}/subsubtasks`, {
     method: 'POST',
     headers: {
@@ -105,9 +149,16 @@ const AddSubSubtask = async (subtaskId, newSubSubtask) => {
   });
 };
 
-const DeleteSubSubtask = async (subSubtaskId) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Deletes a specified sub-subtask by its ID.
+ * @async
+ * @function
+ * @param {number} subSubtaskId - ID of the sub-subtask to delete.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Response>} A promise that resolves if the sub-subtask was deleted successfully.
+ * @throws {Error} If the request fails.
+ */
+const DeleteSubSubtask = async (subSubtaskId, token) => {
   console.log(`ENDPOINT: ${`${API_BASE_URL}/api/tasks/subsubtasks/${subSubtaskId}`}`)
   return fetch(`${API_BASE_URL}/api/tasks/subsubtasks/${subSubtaskId}`, {
     method: 'DELETE',
@@ -122,9 +173,16 @@ const DeleteSubSubtask = async (subSubtaskId) => {
   });
 };
 
-const CompleteTask = async (taskId) => {
-  const token = sessionStorage.getItem('token'); 
-  
+/**
+ * Marks a task as completed.
+ * @async
+ * @function
+ * @param {number} taskId - ID of the task to mark as completed.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the task was marked completed.
+ * @throws {Error} If the request fails.
+ */
+const CompleteTask = async (taskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/complete/${taskId}`, {
     method: 'POST',
     headers: {
@@ -146,9 +204,16 @@ const CompleteTask = async (taskId) => {
   });
 };
 
-const CompleteSubtask = async (subtaskId) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Marks a subtask as completed.
+ * @async
+ * @function
+ * @param {number} subtaskId - ID of the subtask to mark as completed.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the subtask was marked completed.
+ * @throws {Error} If the request fails.
+ */
+const CompleteSubtask = async (subtaskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/subtasks/complete/${subtaskId}`, {
     method: 'POST',
     headers: {
@@ -163,9 +228,16 @@ const CompleteSubtask = async (subtaskId) => {
   });
 };
 
-const CompleteSubSubtask = async (subSubtaskId) => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Marks a sub-subtask as completed.
+ * @async
+ * @function
+ * @param {number} taskId - ID of the sub-subtask to mark as completed.
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the sub-subtask was marked completed.
+ * @throws {Error} If the request fails.
+ */
+const CompleteSubSubtask = async (subSubtaskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/subsubtasks/complete/${subSubtaskId}`, {
     method: 'POST',
     headers: {
@@ -180,9 +252,18 @@ const CompleteSubSubtask = async (subSubtaskId) => {
   });
 };
 
-const UpdateItem = async (itemId, itemType, newDescription) => {
-  const token = sessionStorage.getItem('token');
-
+/**
+ * Updates the description of a task, subtask, or sub-subtask
+ * @async
+ * @function
+ * @param {number} itmeId - ID of the task, subtask, or sub-subtask to mark as completed.
+ * @param {string} ietmType - Whether we're updating a 'task', 'subtask', or 'subsubtask'
+ * @param {string} newDescription - The new description of the item
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the description was updated.
+ * @throws {Error} If the request fails.
+ */
+const UpdateItem = async (itemId, itemType, newDescription, token) => {
   const response = await fetch(`${API_BASE_URL}/api/tasks/update`, {
     method: 'PUT',
     headers: {
@@ -201,9 +282,15 @@ const UpdateItem = async (itemId, itemType, newDescription) => {
   return await response.json();
 };
 
-const GetCompletedTasks = async () => {
-  const token = sessionStorage.getItem('token'); 
-
+/**
+ * Fetches all of a user's completed tasks
+ * @async
+ * @function
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the completed tasks we're fetched.
+ * @throws {Error} If the request fails.
+ */
+const GetCompletedTasks = async (token) => {
   return fetch(`${API_BASE_URL}/api/tasks/completed`, {
     method: 'GET',
     headers: {
@@ -218,8 +305,17 @@ const GetCompletedTasks = async () => {
   });
 };
 
-const updateTaskCategory = async (taskId, newCategory) => {
-  const token = sessionStorage.getItem('token');
+/**
+ * Updates the category of a top-level task (when dragged and dropped)
+ * @async
+ * @function
+ * @param {number} taskId - ID of the task to mark as completed.
+ * @param {number} newCategory - The ID of the new category of the task
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves if the task was marked completed.
+ * @throws {Error} If the request fails.
+ */
+const updateTaskCategory = async (taskId, newCategory, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/${taskId}`, {
     method: 'PUT',
     headers: {

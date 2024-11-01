@@ -1,8 +1,15 @@
 const API_BASE_URL = 'http://127.0.0.1:5000'; 
 
-const getTimeSuggestions = async (taskData) => {
-    const token = sessionStorage.getItem('token'); 
-
+/**
+ * Gets the calendar suggestions for a new task when in smart scheduling mode 
+ * @async
+ * @function
+ * @param {Object} taskData - Object including details like task description
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves to the fetched time suggestions.
+ * @throws {Error} If the request fails.
+ */
+const getTimeSuggestions = async (taskData, token) => {
     try {
         console.log("MAKING API REQUEST TO: ", `${API_BASE_URL}/api/scheduler/schedule-task`)
         const response = await fetch(`${API_BASE_URL}/api/scheduler/schedule-task`, {
@@ -27,9 +34,16 @@ const getTimeSuggestions = async (taskData) => {
     }
 };
 
-const confirmTaskSchedule = async (scheduleData) => {
-    const token = sessionStorage.getItem('token'); 
-
+/**
+ * Creates a calendar event using the suggestion the user accepted
+ * @async
+ * @function
+ * @param {Object} scheduleData - Info needed to schedule an event in GCalendar
+ * @param {string} token - Authentication token from AuthContext.
+ * @returns {Promise<Object>} A promise that resolves when the calendar event is created.
+ * @throws {Error} If the request fails.
+ */
+const confirmTaskSchedule = async (scheduleData, token) => {
     try {
         const response = await fetch(`${API_BASE_URL}/api/calendar/create-event`, {
         method: 'POST',

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Input, Popconfirm, message } from 'antd';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable } from 'react-beautiful-dnd';
 import tasksApi from '../../api/tasksApi';
+import { AuthContext } from '../../context/AuthContext';
 
 /**
  * SubSubtask component - Renders an editable, draggable sub-subtask item
@@ -27,6 +28,7 @@ import tasksApi from '../../api/tasksApi';
 const SubSubtask = ({ subsubtask, index, onDelete, category, refreshTasks }) => {
   const [isEditing, setIsEditing] = useState(false); // Controls edit mode
   const [editValue, setEditValue] = useState(subsubtask.description); // Holds input value for editing
+  const { token } = useContext(AuthContext);
 
   // Initiates edit mode
   const startEditing = () => setIsEditing(true);
@@ -35,7 +37,7 @@ const SubSubtask = ({ subsubtask, index, onDelete, category, refreshTasks }) => 
   const saveEdit = async () => {
     if (editValue.trim()) {
       try {
-        await tasksApi.UpdateItem(subsubtask.id, 'subsubtask', editValue);
+        await tasksApi.UpdateItem(subsubtask.id, 'subsubtask', editValue, token);
         setIsEditing(false); // Exit edit mode
         refreshTasks(); // Refresh the tasks to reflect changes
         message.success("Task updated successfully");

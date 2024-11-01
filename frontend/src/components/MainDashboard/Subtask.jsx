@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Input, Popconfirm, message } from 'antd';
 import { DeleteOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import SubSubtask from './SubSubtask';
 import tasksApi from '../../api/tasksApi';
+import { AuthContext } from '../../context/AuthContext';
 
 /**
  * Subtask component - Displays an individual subtask with options to add/edit sub-subtasks, 
@@ -31,6 +32,7 @@ const Subtask = ({ subtask, index, onAddSubSubtask, onDelete, category, refreshT
   const [showSubSubtasks, setShowSubSubtasks] = useState(false); // Controls visibility of sub-subtasks
   const [isEditing, setIsEditing] = useState(false); // Controls edit mode
   const [editValue, setEditValue] = useState(subtask.description); // Holds current edit input
+  const { token } = useContext(AuthContext);
 
   // Toggle visibility for nested sub-subtasks
   const toggleSubSubtasks = () => setShowSubSubtasks(!showSubSubtasks);
@@ -41,7 +43,7 @@ const Subtask = ({ subtask, index, onAddSubSubtask, onDelete, category, refreshT
   // Save edited subtask description to the database
   const saveEdit = async () => {
     try {
-      await tasksApi.UpdateItem(subtask.id, 'subtask', editValue);
+      await tasksApi.UpdateItem(subtask.id, 'subtask', editValue, token);
       setIsEditing(false); // Exit edit mode
       refreshTasks(); // Refresh tasks to reflect changes
       message.success("Subtask updated successfully");
