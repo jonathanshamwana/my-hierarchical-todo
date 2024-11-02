@@ -4,13 +4,13 @@ const mockSuggestions = [
     date: "2024-11-04",
     time: "07:30:00-03:00",
     event_data: {
-      summary: "20-Mile Marathon Training Run",
+      summary: "20 mile run",
       start: {
-        dateTime: "2024-11-03T07:30:00-03:00",
+        dateTime: "2024-11-04T06:00:00-03:00",
         timeZone: "America/Sao_Paulo"
       },
       end: {
-        dateTime: "2024-11-03T09:00:00-03:00",
+        dateTime: "2024-11-04T08:30:00-03:00",
         timeZone: "America/Sao_Paulo"
       }
     }
