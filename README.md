@@ -1,8 +1,6 @@
-# 26Club Task Management for Runners
+# 26Club - Task Management for Runners
 
-This web app enables runners to create hierarchical todolists to track Running, Gym, Nutrition, Recovery activities. It's hierarchical in that users can create tasks, subtasks, and sub-subtasks, and decide when to obscure or show a level of the hierarchy. Users can create tasks, edit them, drag them to other lists, and then drop them in the 'Completion Dropzone'. Completed Tasks can be viewed, grouped by date, on a separate page.
-
-Lastly, users can enable smart scheduling mode, which integrates with with external APIs (Strava, Google Calendar, and OpenAI) to determine appropriate slots for tasks in their calendar, then create calendar events for them if the user accepts the suggestion.
+26Club enables runners to create todo lists for their Running, Gym, Nutrition, and Recovery tasks. Users can create nested tasks, i.e., tasks that have subtasks and sub-subtasks. And by simply dragging and dropping, users can move tasks between todo lists or into the completion zone, after which they can see completed tasks on a separate page.
 
 ## Features
 
@@ -13,6 +11,7 @@ Lastly, users can enable smart scheduling mode, which integrates with with exter
    - Users can create tasks in one of four lists: Running, Gym, Nutrition, and Recovery.
    - Tasks can contain multiple layers of nested subtasks and sub-subtasks.
    - Each task can be dragged and dropped into another list.
+   - Dropping a task in the 'Completion Zone' marks a task as 'completed', moving it from a todo-list to the Completed Tasks page.
 
 2. **API Integrations**:
 
@@ -22,9 +21,12 @@ Lastly, users can enable smart scheduling mode, which integrates with with exter
 
 3. **Smart Scheduling**:
 
-   - Users can enable Smart Scheduling, allowing the app to recommend optimal times for tasks based on user schedule data.
-   - When Smart Schedling is enabled, an API request is made to OpenAI to fetch calendar suggestions, and then a modal opens with the list of suggestions that a user can accept.
-   - Upon accepting, a new calender event is created.
+   - This is currently only available for the super-admin, otherwise the API costs would be too high.
+   - When the "Smart Scheduling" switch is toggled, the user will get a pop up every time they add a task, containing suggestions for when to schedule it on their calendar.
+   - This is executed with three external APIs:
+     - **_Strava API:_** Fetches the user's most recent running activities from their Strava profile.
+     - **_Google Calendar API:_** Fetches the ten upcoming events on the users calendar, and allows for calendar events to be automatically created.
+     - **_OpenAI API:_** Receives the user's Strava and calendar data, and the task they just added, then finds an optimal time to create a calendar event for the new task.
 
 4. **Authorization and Authentication**:
 
@@ -36,89 +38,78 @@ Lastly, users can enable smart scheduling mode, which integrates with with exter
 
 ### Structure Overview
 
-| Directory                  | Description                                                              |
-| -------------------------- | ------------------------------------------------------------------------ |
-| `backend/`                 | Contains all backend services, including routes and models.              |
-| `backend/app.py`           | Initializes the Flask application, config, and key services.             |
-| `backend/models/models.py` | Contains the ORM models (User, Task, Subtask, etc.)                      |
-| `backend/services/`        | Holds integrations with external APIs (Strava, Google Calendar, OpenAI). |
-| `frontend/`                | Holds the React-based frontend code, including components and pages.     |
-| `frontend/src/pages/`      | Contains individual React pages (e.g., Dashboard, Login, Signup).        |
-| `frontend/src/components/` | Shared components (e.g., Header, Footer, TaskItem, Subtask).             |
-| `frontend/src/styles/`     | Stores CSS for each component and page, following modular styles.        |
-
-### Key Components
-
-1. **Dashboard** (`Dashboard.jsx`): Displays four todo lists, one for ewach category (e.g., Running, Gym) and allows users to add, edit, delete, and organize tasks.
-2. **Task and Subtask Components** (`TaskItem.js`, `Subtask.js`, `SubSubtask.js`): Modular components that support hierarchical task displays.
-3. **Authentication**:
-   - **`Login.jss`, `Signup.jss`**: Handle user login and registration, including JWT storage.
-   - **`ProtectedRoute.jss`**: Ensures routes are accessible only to authenticated users.
-4. **Modals / Forms**:
-   - **AddTaskFrom** (`AddTaskForm.jsx`) A form that pops up whenever a user wants to add a task, subtask, or subsubtask to a list.
-   - **SmartSchedulingModal** (`SmartSchedulingModal.jsx`) A modals that renders the smart calendar suggestions, formatted in the `TaskCreationForm` component.
+| Directory                  | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| `backend/`                 | Contains all backend services, including routes and models.                     |
+| `backend/app.py`           | Initializes the Flask application, config, and key services.                    |
+| `backend/models.py`        | Contains the ORM models for User, Task, Subtask, etc.                           |
+| `backend/tasks.py`         | Contains all API endpoints for task-related operations, like adding a new task. |
+| `backend/services/`        | Holds integrations with external APIs (Strava, Google Calendar, OpenAI).        |
+| `frontend/`                | Holds the React-based frontend code, including components and pages.            |
+| `frontend/src/pages/`      | Contains individual React pages (e.g., Dashboard, Login, Signup).               |
+| `frontend/src/components/` | Contains reusable components, like Footer, Header, Task, or TodoList.           |
+| `frontend/src/api/`        | Apis for interfacing with the Flask backend                                     |
+| `frontend/src/context/`    | Contains the AuthContext that manages user tokens and signin                    |
+| `frontend/src/styles/`     | Stores CSS for each component and page, following modular styles.               |
 
 ### Installation
 
-1. **Clone the Repository**
+1. **Unzip the Provided Folder**
 
-   ```bash
-   git clone https://github.com/jonathanshamwana/my-hierarchichal-todo.git
-   cd my-hierarchical-todo
-   ```
+   After downloading the provided zipped folder, unzip it to your desired location. This folder contains both the backend and frontend files, as well as a pre-configured database file that you’ll use directly.
 
 2. **Backend Setup**
 
-   - Navigate to the `backend/` folder:
+   - Open a terminal and navigate to the `backend` folder inside the unzipped project:
      ```bash
-     cd backend
+     cd path/to/unzipped-folder/backend
      ```
-   - Install dependencies:
+   - Install the necessary Python dependencies:
      ```bash
      pip install -r requirements.txt
      ```
-   - Set up database migrations:
-     ```bash
-     flask db init
-     flask db migrate -m "Initial migration"
-     flask db upgrade
-     ```
-   - Run the backend:
+   - **Important:** Skip database initialization steps, as the pre-configured database file in this folder will be used.
+
+   - Run the backend server:
      ```bash
      flask run
      ```
+     The backend should now be accessible at `http://127.0.0.1:5000`.
 
 3. **Frontend Setup**
-   - Navigate to the `frontend/` folder:
+
+   - Open a new terminal window and navigate to the `frontend` folder:
      ```bash
-     cd frontend
+     cd path/to/unzipped-folder/frontend
      ```
-   - Install dependencies:
+   - Install the necessary Node.js dependencies:
      ```bash
      npm install
      ```
-   - Run the frontend:
+   - Run the frontend server:
      ```bash
      npm start
      ```
+     The frontend should now be accessible at `http://localhost:3000`.
 
 ## Future Improvements
 
 1. **Draggable Subtasks and Sub-Subtasks**:
 
-   - Allow users to rearrange subtasks and sub-subtasks within their respective categories.
+   - Allow users to move subtasks and subsubtasks between top-level tasks or between lists.
 
 2. **Editable Sub-Lists**:
 
-   - Enable users to edit the names of the todo lists, as opposed to limiting it to "Running", "Recovery", and so on.
+   - Enable users to edit the names of the todo lists, as opposed to limiting it to "Running", "Recovery", etc.
 
 3. **Multiple Boards**:
 
-   - Expand the project to support multiple boards, allowing users to create daily or weekly task lists. This would require a `boards` table in the database and UI components to switch between boards.
+   - Expand the project to support multiple boards, allowing users to create daily or weekly dashboards.
+   - This would require a `boards` table in the database, and a UI component that allows users to select one of their boards, and an API that fetches and interacts with the correct board from the database.
 
 4. **Automated Task Suggestions**:
 
-   - Set up a cron job to fetch data from Strava and Google Calendar each morning and pass it to OpenAI, which can generate a list of suggested tasks for the day. This is another layer of abstraction, where the user doesn't have to explicitly state which tasks to add
+   - Set up a cron job to fetch data from Strava and Google Calendar each morning and pass it to OpenAI, which can generate a list of suggested tasks for the day. This is another layer of abstraction, where the user doesn't even have to explicitly state which tasks to add.
 
 5. **Comprehensive Testing**:
    - Due to time constraints, I implemented unit tests for the backend functions and the main apis and functional components on the frontend.
