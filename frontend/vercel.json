@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/:path*",
-      "destination": "https://your-render-app-url.onrender.com/:path*",
+      "destination": "https://my-hierarchical-todo.onrender.com/:path*",
       "permanent": true
     }
   ]
