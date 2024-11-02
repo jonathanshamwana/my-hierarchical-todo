@@ -1,6 +1,17 @@
 import React from 'react';
-import '../../styles/IntegrationsDashboard.css';
+import '../../styles/IntegrationsDashboard/IntegrationsDashboard.css';
 
+/**
+ * CorosPanel component - Displays Coros integration information.
+ * Allows users to track their workouts and performance data.
+ * 
+ * @component
+ * @example
+ * // Usage
+ * <CorosPanel />
+ * 
+ * @returns {JSX.Element} A panel with Coros integration details.
+ */
 const CorosPanel = () => {
   return (
     <div className="integration-panel coros">

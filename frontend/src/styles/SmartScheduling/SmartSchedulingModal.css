@@ -1,0 +1,47 @@
+.modal-container {
+    padding: 40px;
+  }
+  
+  .suggestion-item {
+    border-radius: 8px;
+    border: 1px solid var(--secondary-color);
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .suggestion-details {
+    max-width: 70%;
+  }
+  
+  .suggestion-date, .suggestion-time {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  .suggestion-justification {
+    margin-top: 8px;
+    color: #666;
+  }
+  
+  .accept-button {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 6px 12px;
+  }
+
+.accept-button:hover,
+.accept-button:focus {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.modal-task-description {
+    font-size: 14px;
+    margin: 20px auto;
+}
