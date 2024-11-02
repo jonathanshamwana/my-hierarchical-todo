@@ -69,10 +69,12 @@ def create_task(current_user_id):
     """
     Create a new task with optional subtasks for the authenticated user.
     """
+    print('ACCESSING ENDPOINT IN TEST MODE')
     data = request.get_json()
     category = Category.query.filter_by(name=data['category']).first()
     
     if not category:
+        print("CATEGORY NOT FOUND")
         return jsonify({'error': 'Category not found'}), 404
 
     # Create the task object and commit it to the database

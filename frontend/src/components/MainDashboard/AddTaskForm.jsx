@@ -53,6 +53,11 @@ const AddTaskForm = ({ categories, onAddTask, formType = 'task' }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (formType === 'task' && (!taskName.trim() || !selectedCategory)) {
+      console.log("Form data invalid.");
+      return; 
+    }
+
     if (formType === 'subtask' && subtasks.length > 0) {
       subtasks.forEach((subtask) => {
         onAddTask({ description: subtask.name, subtasks: [] });

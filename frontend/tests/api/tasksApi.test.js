@@ -1,6 +1,8 @@
 import tasksApi from '../../src/api/tasksApi';
 
 describe('tasksApi - fetchTasks', () => {
+  let token = 'mockToken'; // Define a mock token
+
   beforeAll(() => {
     // Mock sessionStorage globally
     Object.defineProperty(global, 'sessionStorage', {
@@ -15,13 +17,13 @@ describe('tasksApi - fetchTasks', () => {
   });
 
   beforeEach(() => {
-    global.fetch = jest.fn();
-    global.sessionStorage.setItem('token', 'mockToken');
+    global.fetch = jest.fn(); // Mock fetch
+    global.sessionStorage.setItem('token', token); // Set token in sessionStorage
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    global.sessionStorage.clear();
+    jest.resetAllMocks(); // Reset mocks after each test
+    global.sessionStorage.clear(); // Clear sessionStorage
   });
 
   it('should fetch tasks successfully', async () => {
@@ -32,23 +34,29 @@ describe('tasksApi - fetchTasks', () => {
       json: async () => mockTasksData,
     });
 
-    const data = await tasksApi.fetchTasks();
+    // Pass token explicitly to fetchTasks
+    const data = await tasksApi.fetchTasks(token);
     expect(data).toEqual(mockTasksData);
+
+    // Check if fetch was called with correct arguments
     expect(global.fetch).toHaveBeenCalledWith('http://127.0.0.1:5000/api/tasks/', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer mockToken`,
+        'Authorization': `Bearer ${token}`,
       },
     });
   });
 
   it('should throw an error when fetching tasks fails', async () => {
+    const mockErrorMessage = 'Failed to fetch tasks';
+
     global.fetch.mockResolvedValueOnce({
       ok: false,
-      json: async () => ({ message: 'Failed to fetch tasks' }),
+      json: async () => ({ message: mockErrorMessage }),
     });
 
-    await expect(tasksApi.fetchTasks()).rejects.toThrow('Failed to fetch tasks');
+    // Expect fetchTasks to throw the mock error message
+    await expect(tasksApi.fetchTasks(token)).rejects.toThrow(mockErrorMessage);
   });
 });

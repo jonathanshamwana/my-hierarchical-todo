@@ -1,15 +1,16 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 import unittest
-from auth import auth_bp
-from backend.app import create_app, db
-from models import User
+from backend.app import app, db
+from backend.models import User
 
 class AuthTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        cls.app = create_app(config_name='testing')
-        cls.client = cls.app.test_client()
-        cls.app_context = cls.app.app_context()
+        cls.client = app.test_client()
+        cls.app_context = app.app_context()
         cls.app_context.push()
         db.create_all()
 
