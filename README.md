@@ -146,22 +146,31 @@ npm test
 npm test -- <test-file-name>.test.js
 ```
 
-## Notable LO Applications
+## Notable HC/LO Applications
 
-### #cs162-separationofconcerns
+### #cs162-separationofconcerns & #cs16_abstraction
 
 - #### Modular Components and APIs
 
-  - Components: I created modular UI components like `<TaskItem/>`, `<Subtask/>`, and`<SubSubtask/>` to separate functionality of the differe, allowing each component to be extended or modified independently. Nesting these components within others, such as on the `Dashboard`, keeps the codebase concise and easy to maintain.
-    - In a previous iteration of the app, there were no `<Subtask/>` and `<SubSubtask>` components, they were merely rendered in styled divs in `<TaskItem/>`. This made editing how subtasks were rendered tedious.
-  - API Structure: Instead of embedding fetch statements directly in components, I abstracted API calls into reusable functions stored in the `src/api/` directory. This makes the code more readable and intuitive as api calls are made with simple statements like `tasksApi.addTask()`
+  - Components: I created modular UI components like `<TaskItem/>`, `<Subtask/>`, and`<SubSubtask/>` to separate functionality of the different Dashboard elements. This allows me to extend the functionality of one component without significant changes elsewhere Additionally, by nesting these components within others, pages like the `Dashboard` become more concise and easy to maintain.
+    - In a previous iteration of the app, there were no `<Subtask/>` and `<SubSubtask>` components. I mereley iterated over a Task's subtasks and subsubtasks and rendered a (styled) div for each one. This made the code file verbose and diagnosing issues was challenging.
+  - API Structure: Instead of having long fetch statements within UI component files, I abstracted API calls into reusable functions stored in the `src/api/` directory. This makes the code more readable and intuitive as api calls are made with simple statements like `tasksApi.addTask()`
 
 - #### Stylesheets and Color Variables
 
   - Page-Specific Stylesheets: I organized the CSS by creating a dedicated stylesheet for each page, with some components even having their own stylesheets. This structure makes identifying and modifying styles simple and intuitive.
-  - CSS Variables: Defining root CSS variables (e.g., `var(--primary-color)`) instead of relying on hex codes keeps the styling consistent and manageable, especially as the project grows.
+  - CSS Variables: Defining root CSS variables (e.g., `var(--primary-color)` and `var(--border-radius)`) instead of relying on hex codes keeps the styling consistent and manageable, especially as the project grows.
 
 - #### Smart Scheduling Abstraction
 
-  - User Interface Simplification: I chose to omit the `IntegrationsDashboard` for smart scheduling, presenting users with a streamlined interface that abstracts away the underlying Google Calendar, Strava, MyFitnesssPal, and OpenAI integrations. Users can simply activate smart scheduling and view suggestions without being exposed to unnecessary configuration details.
+  - User Interface Simplification: I chose to omit the `IntegrationsDashboard`, which you can find at `src/pages/IntegrationsDashboard`. This dashboard made the external integrations explicit to the user, and allowed them to veiw their data for each one.
+  - However, I decided that there was little utility in just showing the user their data, and they'd derive more value from interfacing with a smart scheduling modal that leverages each integration under the hood. Users can suggestions without being exposed to unnecessary configuration details.
   - Future Improvements: In the "Future Improvements" section, I suggest how we could leverage the smart scheduler to further simplify task creation. Instead of manually recalling tasks, users could accept AI-generated task suggestions based on their data.
+
+### #designthinking
+
+- By using my initial Kanban board from class as a foundation, I could iterate on my todo app over the span of 6 weeks, receiving feedback from my peers and friends.
+- While in a breakout with Carl Kho, he expressed that due to how many todo-list apps exist, he'd probably only switch to another one if it was more niche or specialized, like one for developers or students. This motivated me to design specifically for runners.
+- I interviewed to of my friends, Juliane Walther and Justin Stoddart, who are avid runners to gain insight their biggest painpoints. To mitigate social desirability bias, I didn't tell them that it was for a product I was building, and I made the questions user-centric, not feature-centric.
+  - These interviews inspired the smart-scheduling feature, since Justin and Juliane both live and die by their calendars, but still find it difficult to make time for all of their running-related activities.
+- Through continuous iterations, motivated by user feedback, I was able to build a product that's more likely to solve a problem for a specific audience.
