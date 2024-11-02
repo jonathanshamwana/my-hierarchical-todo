@@ -6,7 +6,7 @@ import '../../styles/SmartScheduling/SmartSchedulingModal.css';
  * SmartSchedulingModal component - Displays scheduling suggestions for a specific task,
  * allowing the user to add the task to Google Calendar at the suggested times.
  *
- * @param {boolean} isVisible - Determines if the modal is visible.
+ * @param {boolean} visible - Determines if the modal is visible.
  * @param {array} suggestions - List of time suggestions with date, time, and justification.
  * @param {function} onAccept - Function to handle acceptance of a specific suggestion.
  * @param {function} onClose - Function to handle closing the modal.
@@ -24,11 +24,12 @@ import '../../styles/SmartScheduling/SmartSchedulingModal.css';
  *
  * @returns {JSX.Element} A modal displaying scheduling suggestions for a task.
  */
-const SmartSchedulingModal = ({ isVisible, suggestions, onAccept, onClose, taskDescription }) => {
+const SmartSchedulingModal = ({ visible, suggestions, onAccept, onClose, taskDescription }) => {
+  
   return (
     <Modal
       title="Smart Scheduling Suggestions"
-      open={isVisible}
+      open={visible}
       onCancel={onClose}
       footer={null}
       className="modal-container"
@@ -65,4 +66,3 @@ const SmartSchedulingModal = ({ isVisible, suggestions, onAccept, onClose, taskD
 };
 
 export default SmartSchedulingModal;
-

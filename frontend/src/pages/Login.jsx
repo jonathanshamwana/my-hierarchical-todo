@@ -31,9 +31,9 @@ function Login() {
     
     try {
       await authApi.LoginUser(userData, login);
-      message.success('Successfully logged in')
+      message.success('Successfully logged in');
     } catch (err) {
-      message.success('Failed to logged in')
+      message.error(err.message || 'Invalid email or password');
     }
   };
 

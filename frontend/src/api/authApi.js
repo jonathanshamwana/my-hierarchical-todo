@@ -24,7 +24,7 @@ const SignupUser = async (userData) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Something went wrong');
+      throw new Error(data.error || 'Something went wrong');
     }
 
     return data;
@@ -48,6 +48,7 @@ const SignupUser = async (userData) => {
  */
 const LoginUser = async (credentials, login) => {
   try {
+    console.log("ATTEMPTING TO LOG IN USER...")
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -58,13 +59,12 @@ const LoginUser = async (credentials, login) => {
 
     const data = await response.json();
 
-    if (response.ok) {
-      login(data.token); // Save the user token in session storage
-      window.location.href = '/dashboard'; // Redirect to dashboard after login
-    } else {
-      console.error('Login failed:', data.message);
+    if (!response.ok) {
+      throw new Error(data.message || 'Something went wrong during login');
     }
 
+    login(data.token); // Save the token  in AuthContext
+    window.location.href = '/dashboard'; // Redirect to dashboard after login
     return data;
   } catch (error) {
     console.error('Error during login:', error);

@@ -19,7 +19,7 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        """Verify the user's password."""
+        """Verify the users password."""
         return check_password_hash(self.password_hash, password)
 
 
@@ -38,9 +38,10 @@ class Task(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.String(50), default='ToDo', nullable=False)
+    status = db.Column(db.String(50), default='in-progress', nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    completion_date = db.Column(db.DateTime, nullable=True)  # New column for completion date
     subtasks = db.relationship('Subtask', backref='task', lazy='dynamic', cascade='all, delete-orphan')
 
 
@@ -50,6 +51,7 @@ class Subtask(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.String(50), default='in-progress', nullable=False) 
     task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'), nullable=False)
     subsubtasks = db.relationship('SubSubtask', backref='subtask', lazy='dynamic', cascade='all, delete-orphan')
 
@@ -60,15 +62,6 @@ class SubSubtask(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
+    status = db.Column(db.String(50), default='in-progress', nullable=False) 
     subtask_id = db.Column(db.Integer, db.ForeignKey('subtasks.id'), nullable=False)
 
-
-# CompletedTask Model for storing completed tasks with optional subtasks
-class CompletedTask(db.Model):
-    __tablename__ = 'completed_tasks'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(255), nullable=False)
-    subtasks = db.Column(db.Text)  # Store subtasks as JSON or plain text
-    completion_date = db.Column(db.DateTime, default=datetime.now(timezone.utc), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)

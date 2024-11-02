@@ -9,7 +9,6 @@ const API_BASE_URL = 'http://127.0.0.1:5000';
  * @throws {Error} If the request fails.
  */
 const fetchTasks = async (token) => {
-  console.log("TOKEN", token)
   return fetch(`${API_BASE_URL}/api/tasks/`, {
       method: 'GET',
       headers: {
@@ -184,7 +183,7 @@ const DeleteSubSubtask = async (subSubtaskId, token) => {
  */
 const CompleteTask = async (taskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/complete/${taskId}`, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json', 
@@ -215,7 +214,7 @@ const CompleteTask = async (taskId, token) => {
  */
 const CompleteSubtask = async (subtaskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/subtasks/complete/${subtaskId}`, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json', 
@@ -239,7 +238,7 @@ const CompleteSubtask = async (subtaskId, token) => {
  */
 const CompleteSubSubtask = async (subSubtaskId, token) => {
   return fetch(`${API_BASE_URL}/api/tasks/subsubtasks/complete/${subSubtaskId}`, {
-    method: 'POST',
+    method: 'PUT',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json', 

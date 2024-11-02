@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import TodoList from '../components/MainDashboard/TodoList';
 import CompletedDropzone from '../components/MainDashboard/CompletionDropzone';
-import AddTaskForm from '../components/MainDashboard/AddTaskForm';
-import tasksApi from '../api/tasksApi';
 import { AuthContext } from '../context/AuthContext';
-import taskSchedulerApi from '../api/taskSchedulerApi';
 import SmartSchedulingModal from '../components/TaskScheduler/SmartSchedulingModal';
 import { Modal, message } from 'antd';
 import { Switch, FormControlLabel } from '@mui/material';
@@ -13,6 +10,9 @@ import mockSuggestions from '../data/mockData';
 import Confetti from 'react-confetti';
 import '../styles/MainDashboard/Dashboard.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AddTaskForm from '../components/MainDashboard/AddTaskForm';
+import tasksApi from '../api/tasksApi';
+import useTaskSchedulerApi from '../api/taskSchedulerApi';
 
 /**
  * Dashboard component displays the four todo lists that will hold the users tasks
@@ -28,15 +28,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
  * @returns {JSX.Element} A dashboard of hierarchical todo lists 
  */
 const Dashboard = () => {
+  const { token, user } = useContext(AuthContext);
+  const isSuperAdmin = user && user.email === 'jonathanshamwana@gmail.com';
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSchedulerModalVisible, setIsSchedulerModalVisible] = useState(false);
   const [formType, setFormType] = useState('task');
-  const [smartSchedulingEnabled, setSmartSchedulingEnabled] = useState(true);
+  const [smartSchedulingEnabled, setSmartSchedulingEnabled] = useState(false);
   const [timeSuggestions, setTimeSuggestions] = useState(null);
   const [smartSchedulingTask, setSmartSchedulingTask] = useState(null);
   const [selectedSubtask, setSelectedSubtask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [showConfetti, setShowConfetti] = useState(false)
   const [tasks, setTasks] = useState({
     running: [],
     gym: [],
@@ -44,7 +46,9 @@ const Dashboard = () => {
     recovery: []
   });
   const [error, setError] = useState(null);
-  const { token } = useContext(AuthContext);
+  const [showConfetti, setShowConfetti] = useState(false)
+
+  const { confirmTaskSchedule, getTimeSuggestions } = useTaskSchedulerApi();
 
   // fetches all of the user's tasks from the database by calling the tasksApi
   const fetchTasks = async () => {
@@ -210,7 +214,7 @@ const Dashboard = () => {
       // If the user enables smart suggestions, fetch the calendar suggestions for the sub-subtask
       if (smartSchedulingEnabled) {
         setSmartSchedulingTask(newSubSubtask);
-        setTimeout(() => handleGetTaskSuggestions(), 3000);
+        setTimeout(() => handleGetTaskSuggestions(), 6000);
       };
 
     } catch (error) {
@@ -333,14 +337,14 @@ const Dashboard = () => {
   
     // Prepare the event data to send to the backend
     const scheduleData = {
-      summary: suggestion.event_data.summary,
       description: "Scheduled from Smart Suggestions",
-      startDateTime: suggestion.event_data.start_date,
-      endDateTime: suggestion.event_data.end_date,
+      summary: suggestion.event_data.summary,
+      startDateTime: suggestion.event_data.start.dateTime,
+      endDateTime: suggestion.event_data.end.dateTime,
     };
   
     try {
-      const response = await taskSchedulerApi.confirmTaskSchedule(scheduleData);
+      const response = await confirmTaskSchedule(scheduleData);
       if (response.status === 'Event created') {
         message.success("Event added to Google Calendar!");
       } else {
@@ -362,7 +366,8 @@ const Dashboard = () => {
         <div className="smart-scheduler-container">
 
         {/* Switch component that allows users to toggle between smart scheduling mode and regular mode */}
-        <FormControlLabel
+        { isSuperAdmin && (
+          <FormControlLabel
           control={
             <Switch
               checked={smartSchedulingEnabled}
@@ -394,7 +399,8 @@ const Dashboard = () => {
             display: 'flex',
             alignItems: 'center',
           }}
-        />
+          />
+        )}
         </div>
         <div className="lists-container">
           
@@ -475,7 +481,7 @@ const Dashboard = () => {
 
         {/* Modal that opens automatically after adding a task/subtask/subsubtask when user is on smart-scheduling mode */}
         <SmartSchedulingModal
-          open={isSchedulerModalVisible}
+          visible={isSchedulerModalVisible}
           suggestions={timeSuggestions}
           onAccept={handleAcceptSuggestion} 
           onClose={() => setIsSchedulerModalVisible(false)}

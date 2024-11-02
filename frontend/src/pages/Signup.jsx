@@ -41,7 +41,10 @@ function Signup() {
       message.success("Account created")
       navigate('/dashboard')
     } catch (err) {
-      message.error("Failed to create account")
+      const errorMessage = err.message.includes('Email already exists') 
+        ? "Email already exists. Please use another email."
+        : "Failed to create account";
+      message.error(errorMessage);
     }
   };
 

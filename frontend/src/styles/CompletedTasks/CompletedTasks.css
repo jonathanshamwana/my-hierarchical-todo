@@ -39,7 +39,7 @@ h1 {
 }
 
 .completed-task-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
 }
 
 .task-title {
@@ -51,15 +51,12 @@ h1 {
     font-weight: bold;
     color: #333;
     margin-top: 10px;
+    margin-left: 10px;
 }
 
 .subtask-list {
     list-style: none;
     padding-left: 20px;
-}
-
-.subtask-item {
-    color: #666;
 }
 
 .completion-date {
@@ -83,11 +80,27 @@ h1 {
     margin-top: 40px;
 }
 
-.subsubtask-item {
-    background-color: var(--accent-color);
-    color: var(--secondary-color);
+.subsubtask-list {
+    list-style: none;
+}
+
+.subtask-item {
+    color: #666;
+    margin-top: 10px;
+    padding-left: 10px;
 }
 
 .subsubtask-list {
     list-style: none;
+    padding-left: 20px;
+    margin-top: 5px;
+}
+
+.subsubtask-item {
+    font-size: 14px;
+    color: var(--secondary-color);
+    background-color: var(--accent-color);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-top: 3px;
 }

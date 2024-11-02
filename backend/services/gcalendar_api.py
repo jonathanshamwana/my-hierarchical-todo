@@ -84,6 +84,7 @@ def create_event(current_user_id):
     try:
         service = get_calendar_service()
         event_data = request.json
+        print("EVENT DATA:", event_data)
         event = {
             'summary': event_data.get('summary', 'New Event'),
             'location': event_data.get('location', ''),
