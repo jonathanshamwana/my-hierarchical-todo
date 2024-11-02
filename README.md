@@ -1,5 +1,7 @@
 # 26Club - Task Management for Runners
 
+[Demo Video](https://www.loom.com/share/5b6416d0daa6413285bcf722a4b6d022?sid=4fca358f-0ac3-40cf-a1c5-c9e508d78b15)
+
 26Club enables runners to create todo lists for their Running, Gym, Nutrition, and Recovery tasks. Users can create nested tasks, i.e., tasks that have subtasks and sub-subtasks. And by simply dragging and dropping, users can move tasks between todo lists or into the completion zone, after which they can see completed tasks on a separate page.
 
 ## Features
@@ -117,10 +119,49 @@
 
 ## Running Tests
 
-- **Backend**: do this
-- **Frontend**: do this
+### Backend
 
-## Dependencies
+To run backend tests with `unittest`, run:
 
-- **Backend**: Flask, Flask-RESTful, Flask-JWT-Extended, Flask-Migrate, SQLAlchemy, Google API Client, OpenAI API Client
-- **Frontend**: React, Ant Design, react-beautiful-dnd, axios
+```bash
+# Navigate to the backend directory
+cd backend
+
+# Run tests with unittest
+python -m unittest discover -s tests
+```
+
+### Frontend
+
+To run the frontend tests with `jest`, run:
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Run Jest tests
+npm test
+
+# Run a specific test file
+npm test -- <test-file-name>.test.js
+```
+
+## Notable LO Applications
+
+### #cs162-separationofconcerns
+
+- #### Modular Components and APIs
+
+  - Components: I created modular UI components like `<TaskItem/>`, `<Subtask/>`, and`<SubSubtask/>` to separate functionality of the differe, allowing each component to be extended or modified independently. Nesting these components within others, such as on the `Dashboard`, keeps the codebase concise and easy to maintain.
+    - In a previous iteration of the app, there were no `<Subtask/>` and `<SubSubtask>` components, they were merely rendered in styled divs in `<TaskItem/>`. This made editing how subtasks were rendered tedious.
+  - API Structure: Instead of embedding fetch statements directly in components, I abstracted API calls into reusable functions stored in the `src/api/` directory. This makes the code more readable and intuitive as api calls are made with simple statements like `tasksApi.addTask()`
+
+- #### Stylesheets and Color Variables
+
+  - Page-Specific Stylesheets: I organized the CSS by creating a dedicated stylesheet for each page, with some components even having their own stylesheets. This structure makes identifying and modifying styles simple and intuitive.
+  - CSS Variables: Defining root CSS variables (e.g., `var(--primary-color)`) instead of relying on hex codes keeps the styling consistent and manageable, especially as the project grows.
+
+- #### Smart Scheduling Abstraction
+
+  - User Interface Simplification: I chose to omit the `IntegrationsDashboard` for smart scheduling, presenting users with a streamlined interface that abstracts away the underlying Google Calendar, Strava, MyFitnesssPal, and OpenAI integrations. Users can simply activate smart scheduling and view suggestions without being exposed to unnecessary configuration details.
+  - Future Improvements: In the "Future Improvements" section, I suggest how we could leverage the smart scheduler to further simplify task creation. Instead of manually recalling tasks, users could accept AI-generated task suggestions based on their data.
