@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://your-render-app-url.onrender.com/:path*",
+      "permanent": true
+    }
+  ]
+}
