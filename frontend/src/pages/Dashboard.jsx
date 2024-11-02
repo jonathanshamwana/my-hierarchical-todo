@@ -98,7 +98,7 @@ const Dashboard = () => {
       // If the user enabled smart scheduling, fetch their calendar suggestions 
       if (smartSchedulingEnabled) {
         setSmartSchedulingTask(newTask);
-        setTimeout(() => handleGetTaskSuggestions(), 3000); // Mock a 3-second delay instead of calling the OpenAI API (change in production)
+        setTimeout(() => handleGetTaskSuggestions(), 6000); // Mock a 3-second delay instead of calling the OpenAI API (change in production)
       };
 
     } catch (error) {
@@ -172,7 +172,7 @@ const Dashboard = () => {
       // If the user enables smart suggestions, fetch the calendar suggestions for the subtask
       if (smartSchedulingEnabled) {
         setSmartSchedulingTask(newSubtask);
-        setTimeout(() => handleGetTaskSuggestions(), 3000);
+        setTimeout(() => handleGetTaskSuggestions(), 6000);
       };
 
     } catch (error) {
@@ -214,7 +214,7 @@ const Dashboard = () => {
       // If the user enables smart suggestions, fetch the calendar suggestions for the sub-subtask
       if (smartSchedulingEnabled) {
         setSmartSchedulingTask(newSubSubtask);
-        setTimeout(() => handleGetTaskSuggestions(), 6000);
+        setTimeout(() => handleGetTaskSuggestions(), 10000);
       };
 
     } catch (error) {
