@@ -1,9 +1,8 @@
 {
-  "redirects": [
+  "rewrites": [
     {
-      "source": "/:path*",
-      "destination": "https://my-hierarchical-todo.onrender.com/:path*",
-      "permanent": true
+      "source": "/api/(.*)",
+      "destination": "https://my-hierarchical-todo.onrender.com/api/$1"
     }
   ]
 }
