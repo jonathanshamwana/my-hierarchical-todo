@@ -3,7 +3,6 @@
 26Club enables runners to create todo lists for their Running, Gym, Nutrition, and Recovery tasks. Users can create nested tasks, i.e., tasks that have subtasks and sub-subtasks. And by simply dragging and dropping, users can move tasks between todo lists or into the completion zone, after which they can see completed tasks on a separate page.
 
 - [Demo Video](https://www.loom.com/share/5b6416d0daa6413285bcf722a4b6d022?sid=4fca358f-0ac3-40cf-a1c5-c9e508d78b15)
-- [Deployed App](https://26club.vercel.app/)
 
 ## Features
 
